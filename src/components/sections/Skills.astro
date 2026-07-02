@@ -1,0 +1,121 @@
+---
+import Section from '../Section.astro';
+import { useTranslations, type Locale } from '../../i18n/ui';
+import { skillFamilies, type Tag } from '../../data/skills';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const tagLabel: Record<Tag, string> = { design: 'Design', dev: 'Dev' };
+---
+
+<Section tone="light" id="skills" labelledby="skills-title">
+  <header class="skills__head">
+    <h2 id="skills-title" class="mono-label">{t('skills.title')}</h2>
+  </header>
+
+  <div class="skills__families">
+    {
+      skillFamilies.map((family) => (
+        <article class="family">
+          <div class="family__intro">
+            <h3 class="family__name">{family.name[locale]}</h3>
+            <p class="family__blurb">{family.blurb[locale]}</p>
+          </div>
+          <ul class="family__skills" role="list">
+            {family.skills.map((skill) => (
+              <li class="skill">
+                <span class="skill__label">{skill.label[locale]}</span>
+                <span class="skill__tags">
+                  {skill.tags.map((tag) => (
+                    <span class:list={['tag', `tag--${tag}`, 'mono-label']}>
+                      {tagLabel[tag]}
+                    </span>
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      ))
+    }
+  </div>
+</Section>
+
+<style>
+  .skills__head {
+    margin-bottom: var(--space-xl);
+  }
+  .skills__families {
+    display: flex;
+    flex-direction: column;
+  }
+  .family {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: var(--space-l) var(--space-2xl);
+    padding-block: var(--space-l);
+    border-block-start: 1px solid var(--hairline);
+  }
+  .family:last-child {
+    border-block-end: 1px solid var(--hairline);
+  }
+  .family__name {
+    font-size: var(--step-3);
+    letter-spacing: var(--tracking-display);
+  }
+  .family__blurb {
+    margin-top: var(--space-2xs);
+    max-width: 32ch;
+    color: var(--ink-muted);
+  }
+  .family__skills {
+    margin: 0;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+  }
+  .skill {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-m);
+    padding-block: var(--space-s);
+    border-block-start: 1px solid var(--hairline);
+  }
+  .skill:first-child {
+    border-block-start: none;
+  }
+  .skill__label {
+    font-size: var(--step-1);
+    font-weight: var(--weight-medium);
+  }
+  .skill__tags {
+    display: inline-flex;
+    gap: var(--space-2xs);
+    flex: none;
+  }
+  .tag {
+    padding: 0.3em 0.7em;
+    border-radius: var(--radius-pill);
+    line-height: 1;
+  }
+  .tag--design {
+    background-color: var(--ink);
+    color: var(--surface);
+  }
+  .tag--dev {
+    background-color: transparent;
+    color: var(--ink-muted);
+    border: 1px solid var(--hairline);
+  }
+
+  @media (max-width: 46rem) {
+    .family {
+      grid-template-columns: 1fr;
+      gap: var(--space-m);
+    }
+  }
+</style>

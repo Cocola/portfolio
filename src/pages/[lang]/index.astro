@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Descent from '../../components/Descent.astro';
+import Hero from '../../components/sections/Hero.astro';
+import Skills from '../../components/sections/Skills.astro';
+import Work from '../../components/sections/Work.astro';
+import About from '../../components/sections/About.astro';
+import Contact from '../../components/sections/Contact.astro';
+import { locales, useTranslations, type Locale } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Locale };
+const t = useTranslations(lang);
+
+const title = `Nicolas Fiascaro — ${t('hero.role')}`;
+const description = t('hero.tagline');
+const fr = lang === 'fr-fr';
+
+// Labels for the anchor nav (altimeter), in section order.
+const nav = [
+  { label: fr ? 'Accueil' : 'Home' },
+  { label: fr ? 'Savoir-faire' : 'Skills' },
+  { label: t('nav.work') },
+  { label: t('nav.about') },
+  { label: t('nav.contact') },
+];
+---
+
+<BaseLayout {title} {description} locale={lang}>
+  <Header slot="header" locale={lang} />
+  <Descent {nav}>
+    <Hero locale={lang} />
+    <Skills locale={lang} />
+    <Work locale={lang} />
+    <About locale={lang} />
+    <Contact locale={lang} />
+  </Descent>
+  <Footer slot="footer" locale={lang} />
+</BaseLayout>

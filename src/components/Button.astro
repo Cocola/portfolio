@@ -1,0 +1,85 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary';
+  class?: string;
+  download?: boolean;
+  external?: boolean;
+}
+const {
+  href,
+  variant = 'primary',
+  class: klass = '',
+  download = false,
+  external = false,
+} = Astro.props;
+const rel = external ? 'noopener' : undefined;
+const target = external ? '_blank' : undefined;
+---
+
+<a
+  class:list={['btn', `btn--${variant}`, klass]}
+  href={href}
+  rel={rel}
+  target={target}
+  download={download ? '' : undefined}
+>
+  <span class="btn__label"><slot /></span>
+</a>
+
+<style>
+  .btn {
+    --btn-pad-y: 0.9em;
+    --btn-pad-x: 1.5em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    padding: var(--btn-pad-y) var(--btn-pad-x);
+    border-radius: var(--radius-pill);
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    line-height: 1;
+    min-height: 48px; /* touch target */
+    transition:
+      transform var(--dur-fast) var(--ease-out-quart),
+      background-color var(--dur-fast) var(--ease-out-quart),
+      border-color var(--dur-fast) var(--ease-out-quart),
+      color var(--dur-fast) var(--ease-out-quart);
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  /* Full monochrome. Hover = fill <-> outline inversion. */
+  .btn--primary {
+    background-color: var(--ink);
+    color: var(--on-ink);
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+  }
+  .btn--primary:hover {
+    background-color: transparent;
+    color: var(--ink);
+  }
+
+  .btn--secondary {
+    background-color: transparent;
+    color: var(--ink);
+    border: 1.5px solid currentColor;
+  }
+  .btn--secondary:hover {
+    background-color: var(--ink);
+    color: var(--on-ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover,
+    .btn:active {
+      transform: none;
+    }
+  }
+</style>

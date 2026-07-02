@@ -1,0 +1,163 @@
+---
+import '../styles/global.css';
+import {
+  locales,
+  htmlLang,
+  defaultLocale,
+  useTranslations,
+  type Locale,
+} from '../i18n/ui';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** OG image, absolute or relative to the site. */
+  ogImage?: string;
+  /** Additional JSON-LD (schema.org objects) to inject. */
+  jsonLd?: Record<string, unknown>[];
+  /** Disables indexing (utility pages). */
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  locale,
+  ogImage = '/og/default.png',
+  jsonLd = [],
+  noindex = false,
+} = Astro.props;
+
+const t = useTranslations(locale);
+const site = Astro.site ?? new URL('https://www.nicolas-fiascaro.com');
+
+// Page path without the locale prefix -> used for the hreflang alternates.
+const segments = Astro.url.pathname.split('/').filter(Boolean);
+if ((locales as readonly string[]).includes(segments[0])) segments.shift();
+const barePath = segments.length ? `/${segments.join('/')}` : '';
+
+const canonical = new URL(`/${locale}${barePath}`, site).href;
+const alternates = locales.map((loc) => ({
+  locale: loc,
+  hreflang: htmlLang[loc],
+  href: new URL(`/${loc}${barePath}`, site).href,
+}));
+const ogImageUrl = new URL(ogImage, site).href;
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Nicolas Fiascaro',
+  jobTitle: 'Design Engineer',
+  url: site.href,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Biarritz',
+    addressCountry: 'FR',
+  },
+  sameAs: [
+    'https://www.linkedin.com/in/nicolas-fiascaro/',
+    'https://github.com/Cocola',
+  ],
+};
+const schemas = [person, ...jsonLd];
+---
+
+<!doctype html>
+<html lang={htmlLang[locale]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* Theme set BEFORE paint (no flash): persistent choice, otherwise OS. */}
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('nf-theme');
+          const theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light');
+          document.documentElement.dataset.theme = theme;
+        } catch (_) {
+          document.documentElement.dataset.theme = 'light';
+        }
+        // The descent always replays from the top: no position restoration
+        // on refresh (otherwise we'd reappear in the middle of the scroll).
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    {/* Fontshare equivalents (to be replaced by self-hosted PP Editorial New +
+        ABC Diatype in polish): Sentient (display antiqua) + Switzer
+        (neutral grotesque body/UI). */}
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://api.fontshare.com/v2/css?f[]=sentient@300,400,500&f[]=switzer@400,500,600&display=swap"
+    />
+    {/* Pixel font reserved for the altimeter (flight-instrument metaphor). */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap"
+    />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <link rel="canonical" href={canonical} />
+    {
+      alternates.map((a) => (
+        <link rel="alternate" hreflang={a.hreflang} href={a.href} />
+      ))
+    }
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={alternates.find((a) => a.locale === defaultLocale)?.href}
+    />
+
+    {/* Open Graph */}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nicolas Fiascaro" />
+    <meta property="og:locale" content={htmlLang[locale].replace('-', '_')} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    {/* Twitter */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {/* Updated dynamically by the theme toggle (default: light). */}
+    <meta name="theme-color" content="#f6f3ed" />
+
+    {
+      schemas.map((schema) => (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(schema)}
+        />
+      ))
+    }
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <a class="skip-link" href="#main">{t('nav.skipToContent')}</a>
+    <slot name="header" />
+    <main id="main">
+      <slot />
+    </main>
+    <slot name="footer" />
+  </body>
+</html>

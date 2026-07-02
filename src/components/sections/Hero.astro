@@ -1,0 +1,72 @@
+---
+import Section from '../Section.astro';
+import Button from '../Button.astro';
+import { useTranslations, type Locale } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const cvHref =
+  locale === 'fr-fr' ? '/cv/nicolas-fiascaro-fr.pdf' : '/cv/nicolas-fiascaro-en.pdf';
+const fr = locale === 'fr-fr';
+---
+
+<Section tone="light" full class="hero" labelledby="hero-title">
+  <p class="hero__role mono-label">{t('hero.role')}</p>
+
+  <h1 id="hero-title" class="hero__title">
+    {
+      fr ? (
+        <>
+          Je <em>conçois</em> et <em>développe</em> la couche produit,
+          <span class="hero__dim"> du design system à l’interface.</span>
+        </>
+      ) : (
+        <>
+          I <em>design</em> and <em>build</em> the product layer,
+          <span class="hero__dim"> from design system to interface.</span>
+        </>
+      )
+    }
+  </h1>
+
+  <div class="hero__actions">
+    <Button href="#work" variant="primary">{t('hero.viewWork')}</Button>
+    <Button href={cvHref} variant="secondary" download>{t('hero.cv')}</Button>
+  </div>
+</Section>
+
+<style>
+  .hero :global(.section__inner) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+  .hero__role {
+    color: var(--ink-muted);
+  }
+  .hero__title {
+    max-width: 18ch;
+    font-size: var(--step-5);
+    font-weight: var(--weight-display);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-display);
+  }
+  /* Antiqua: emphasis by one weight step (no italic, no caps) */
+  .hero__title em {
+    font-style: normal;
+    font-weight: var(--weight-semibold);
+  }
+  .hero__dim {
+    color: var(--ink-muted);
+    font-weight: var(--weight-regular);
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin-top: var(--space-s);
+  }
+</style>

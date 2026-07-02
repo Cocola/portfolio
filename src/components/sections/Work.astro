@@ -1,0 +1,133 @@
+---
+import Section from '../Section.astro';
+import { useTranslations, type Locale } from '../../i18n/ui';
+import { projects } from '../../data/projects';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<Section tone="light" id="work" labelledby="work-title">
+  <header class="work__head">
+    <h2 id="work-title" class="mono-label">{t('work.title')}</h2>
+  </header>
+
+  <ul class="work__list" role="list">
+    {
+      projects.map((p) => (
+        <li class="project">
+          <a class="project__link" href={`/${locale}/projects/${p.slug[locale]}/`}>
+            <span class="project__body">
+              <span class="project__title">{p.title[locale]}</span>
+              <span class="project__summary">{p.summary[locale]}</span>
+            </span>
+            <span class="project__meta">
+              <span class="project__client">{p.client}</span>
+              <span class="project__year mono-label">{p.year}</span>
+            </span>
+            <span class="project__arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Section>
+
+<style>
+  .work__head {
+    margin-bottom: var(--space-l);
+  }
+  .work__list {
+    margin: 0;
+  }
+  .project {
+    border-block-start: 1px solid var(--hairline);
+  }
+  .project:last-child {
+    border-block-end: 1px solid var(--hairline);
+  }
+  .project__link {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: var(--space-m);
+    padding-block: var(--space-m);
+    text-decoration: none;
+  }
+  .project__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    transition: transform var(--dur-base) var(--ease-out-quart);
+  }
+  .project__link:hover .project__body {
+    transform: translateX(0.5rem);
+  }
+  .project__title {
+    font-size: var(--step-2);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
+  }
+  .project__summary {
+    color: var(--ink-muted);
+    max-width: 60ch;
+  }
+  .project__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    gap: var(--space-3xs);
+    white-space: nowrap;
+  }
+  .project__client {
+    font-weight: var(--weight-medium);
+  }
+  .project__year {
+    color: var(--ink-muted);
+  }
+  .project__arrow {
+    font-size: var(--step-2);
+    color: var(--ink-muted);
+    transition:
+      transform var(--dur-base) var(--ease-out-expo),
+      color var(--dur-base) var(--ease-out-quart);
+  }
+  .project__link:hover .project__arrow {
+    transform: translateX(0.4em);
+    color: var(--ink);
+  }
+
+  @media (max-width: 52rem) {
+    .project__link {
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        'body body'
+        'meta arrow';
+      gap: var(--space-s);
+    }
+    .project__body {
+      grid-area: body;
+    }
+    .project__meta {
+      grid-area: meta;
+      flex-direction: row;
+      align-items: baseline;
+      gap: var(--space-2xs);
+    }
+    .project__arrow {
+      grid-area: arrow;
+      justify-self: end;
+      align-self: center;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .project__link:hover .project__body,
+    .project__link:hover .project__arrow {
+      transform: none;
+    }
+  }
+</style>

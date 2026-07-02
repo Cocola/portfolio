@@ -1,0 +1,55 @@
+---
+// Transparent section laid over the continuous atmosphere (see BaseLayout).
+// `tone` only sets the ink. `solid` (landing) lays a full navy
+// to guarantee contrast on the darkest step.
+interface Props {
+  tone?: 'light' | 'dark';
+  solid?: boolean;
+  id?: string;
+  labelledby?: string;
+  class?: string;
+  full?: boolean; // 100dvh height
+}
+const {
+  tone = 'light',
+  solid = false,
+  id,
+  labelledby,
+  class: klass = '',
+  full = false,
+} = Astro.props;
+const dark = tone === 'dark';
+---
+
+<section
+  id={id}
+  class:list={['section', klass, { 'section--full': full, 'section--solid': solid, 'on-dark': dark }]}
+  data-tone={tone}
+  aria-labelledby={labelledby}
+>
+  <div class="container section__inner">
+    <slot />
+  </div>
+</section>
+
+<style>
+  /* Ink/surfaces inherited from the theme (:root / [data-theme='dark']).
+     No more per-section tone: the site background is uniform. */
+  .section {
+    position: relative;
+    color: var(--ink);
+    padding-block: var(--space-3xl);
+  }
+  .section--solid {
+    background-color: var(--page);
+  }
+  .section--full {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .section__inner {
+    width: 100%;
+  }
+</style>

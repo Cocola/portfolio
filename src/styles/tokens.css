@@ -1,0 +1,164 @@
+/* =====================================================================
+   Design tokens — nicolas-fiascaro.com v2
+   "Traveling" palette: from the sky (top) to the ground (bottom).
+   All in OKLCH. The depth steps drive the background during the
+   descent (static vertically, animated by GSAP in P3).
+   ===================================================================== */
+
+:root {
+  /* --- LIGHT journey (not a color journey) ---
+     Warm, film-like B&W: white is never #fff, black never #000,
+     everything is pulled toward a warm axis (hue ~60-75) at very low chroma. The
+     sky->ground descent is carried by EXPOSURE: overexposed at the top
+     (blinding paper), underexposed at the bottom (charcoal, long shadow). Color
+     (terracotta) is rationed: it only returns on contact with the ground. */
+  --paper: oklch(0.966 0.006 75); /* paper — warm white (hero) */
+  --paper-blown: oklch(0.992 0.004 82); /* light peak (takeoff) */
+  --ground: oklch(0.16 0.012 60); /* ground — warm charcoal (landing) */
+  --sky-night: var(--ground); /* inherited alias (footer, dark surfaces) */
+
+  /* Exposure gradient: crushed light at the top -> engraved shadow at the bottom. */
+  --atmosphere: linear-gradient(
+    to bottom,
+    var(--paper-blown) 0%,
+    var(--paper) 24%,
+    oklch(0.87 0.006 72) 48%,
+    oklch(0.62 0.008 68) 68%,
+    oklch(0.32 0.01 62) 86%,
+    var(--ground) 100%
+  );
+  /* Overexposure bloom at the top (light, no asset). */
+  --clouds: radial-gradient(
+      120% 62% at 72% 2%,
+      oklch(1 0 0 / 0.55) 0%,
+      oklch(1 0 0 / 0) 58%
+    );
+
+  /* --- Inks (text): warm, never pure --- */
+  --ink-dark: oklch(0.18 0.008 70);   /* warm black, on paper */
+  --ink-light: oklch(0.96 0.006 80);  /* warm white, on ground */
+  --ink-muted-dark: oklch(0.44 0.008 70);  /* muted (>= 4.5:1 on paper) */
+  --ink-muted-light: oklch(0.74 0.006 75); /* muted on ground */
+
+  /* --- Neutral surfaces (separators, haze) --- */
+  --haze: oklch(0.72 0.006 70);              /* depth gray / haze */
+  --surface-on-light: oklch(0.98 0.005 75);
+  --surface-on-dark: oklch(0.26 0.01 62);
+  --hairline-on-light: oklch(0.18 0.008 70 / 0.16);
+  --hairline-on-dark: oklch(0.96 0.006 80 / 0.18);
+
+  /* --- THEME (light by default) ---
+     The site runs on ONE single background tint (--page), uniform from the top of
+     the descent to the landing. The final disc-photo fades into --page in
+     both themes -> no more band/rectangle. Dark mode
+     (:root[data-theme='dark']) flips these same tokens. No brand
+     color: full B&W, interactions in currentColor. --page-rgb mirrors
+     --page in r,g,b components for the JS tweens (intro). */
+  --page: var(--paper);
+  --page-rgb: 247, 244, 238;
+  --ink: var(--ink-dark);
+  --ink-muted: var(--ink-muted-dark);
+  --on-ink: var(--page); /* text on a solid --ink: follows the theme background */
+  --surface: var(--surface-on-light);
+  --hairline: var(--hairline-on-light);
+
+  /* --- Typography: contrast of REGISTER (not weight) ---
+     Titles = contemporary antiqua, roman, Light, huge (the human,
+     the editorial). Body = a chosen neutral grotesque (the machine). Mono =
+     technical signals only. The type carries Design × Engineer.
+     Ideal target: PP Editorial New (display) + ABC Diatype (body) — to be
+     self-hosted. In the meantime, Fontshare equivalents loaded via <link>:
+     Sentient (antiqua) + Switzer (neutral grotesque). */
+  --font-display: 'PP Editorial New', 'Sentient', 'Times New Roman', Georgia,
+    serif;
+  --font-sans: 'Switzer', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, 'SF Mono',
+    'Menlo', monospace;
+  --font-pixel: 'Silkscreen', ui-monospace, monospace; /* altimeter (instrument) */
+
+  /* Fluid scale (ratio ~1.28), display cap ~6rem */
+  --step--1: clamp(0.83rem, 0.79rem + 0.18vw, 0.94rem);
+  --step-0: clamp(1rem, 0.95rem + 0.25vw, 1.15rem);
+  --step-1: clamp(1.27rem, 1.18rem + 0.45vw, 1.6rem);
+  --step-2: clamp(1.6rem, 1.45rem + 0.78vw, 2.25rem);
+  --step-3: clamp(2.03rem, 1.78rem + 1.27vw, 3.15rem);
+  --step-4: clamp(2.57rem, 2.16rem + 2.05vw, 4.4rem);
+  --step-5: clamp(3.25rem, 2.6rem + 3.2vw, 6rem);
+
+  /* Weights. The display antiqua is set in Light (elegance comes from
+     scale and framing, not weight). */
+  --weight-display: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-black: 700;
+
+  --leading-tight: 1.02;
+  --leading-snug: 1.16;
+  --leading-normal: 1.55;
+  /* Display antiqua: pronounced negative tracking on very large titles. */
+  --tracking-tight: -0.01em;
+  --tracking-display: -0.022em;
+  --tracking-label: 0.08em;
+
+  /* --- Fluid spacing --- */
+  --space-3xs: clamp(0.25rem, 0.24rem + 0.05vw, 0.31rem);
+  --space-2xs: clamp(0.5rem, 0.47rem + 0.13vw, 0.63rem);
+  --space-xs: clamp(0.75rem, 0.71rem + 0.18vw, 0.94rem);
+  --space-s: clamp(1rem, 0.95rem + 0.25vw, 1.25rem);
+  --space-m: clamp(1.5rem, 1.42rem + 0.38vw, 1.88rem);
+  --space-l: clamp(2rem, 1.83rem + 0.85vw, 2.75rem);
+  --space-xl: clamp(3rem, 2.65rem + 1.74vw, 4.5rem);
+  --space-2xl: clamp(4.5rem, 3.91rem + 2.93vw, 7rem);
+  --space-3xl: clamp(6rem, 5rem + 5vw, 10rem);
+
+  /* --- Measures --- */
+  --measure: 68ch;
+  --measure-narrow: 46ch;
+  --container: 78rem;
+  --container-text: 44rem;
+
+  /* --- Radii --- */
+  --radius-s: 0.5rem;
+  --radius-m: 0.875rem;
+  --radius-l: 1.5rem;
+  --radius-pill: 999px;
+
+  /* --- Semantic z-index scale --- */
+  --z-base: 0;
+  --z-scene: 1;
+  --z-content: 10;
+  --z-nav: 100;
+  --z-progress: 200;
+  --z-modal: 1000;
+  --z-toast: 1100;
+
+  /* --- Motion --- */
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 180ms;
+  --dur-base: 320ms;
+  --dur-slow: 620ms;
+}
+
+/* --- Dark mode: "night" descent. Same single tint, in warm charcoal.
+   Chosen explicitly (header toggle, persistent) OR by the OS if no choice. --- */
+:root[data-theme='dark'] {
+  --page: var(--ground);
+  --page-rgb: 37, 34, 30;
+  --ink: var(--ink-light);
+  --ink-muted: var(--ink-muted-light);
+  --surface: var(--surface-on-dark);
+  --hairline: var(--hairline-on-dark);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --page: var(--ground);
+    --page-rgb: 37, 34, 30;
+    --ink: var(--ink-light);
+    --ink-muted: var(--ink-muted-light);
+    --surface: var(--surface-on-dark);
+    --hairline: var(--hairline-on-dark);
+  }
+}

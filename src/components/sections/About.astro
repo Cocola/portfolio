@@ -1,0 +1,167 @@
+---
+import Section from '../Section.astro';
+import { useTranslations, type Locale } from '../../i18n/ui';
+import { journey } from '../../data/about';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const fr = locale === 'fr-fr';
+---
+
+<Section tone="light" id="about" labelledby="about-title">
+  <div class="about__grid">
+    <div class="about__bio">
+      <h2 id="about-title" class="mono-label">{t('about.title')}</h2>
+      <p class="about__lead">
+        {
+          fr
+            ? 'Quinze ans à opérer à l’intersection du design et du code, de l’agence au produit.'
+            : 'Fifteen years working at the intersection of design and code, from agency to product.'
+        }
+      </p>
+      <p class="about__text">
+        {
+          fr
+            ? 'Parti de l’imprimerie, j’ai basculé vers le web pour la puissance du CSS, des interactions et du développement frontend. Aujourd’hui je conçois et je développe la couche produit : discovery, prototypage, design systems et intégration, pour livrer des expériences accessibles, performantes et durables.'
+            : 'Starting out in print, I moved to the web for the power of CSS, interaction and front-end development. Today I design and build the product layer: discovery, prototyping, design systems and integration, to deliver accessible, fast and durable experiences.'
+        }
+      </p>
+    </div>
+
+    <ol class="journey" role="list" aria-label={fr ? 'Parcours professionnel' : 'Career journey'}>
+      {
+        journey.map((j) => (
+          <li class="journey__item">
+            <span class="journey__period mono-label">{j.period}</span>
+            <span class="journey__org">{j.org}</span>
+            <span class="journey__role">{j.role[locale]}</span>
+            <span class="journey__place mono-label">{j.place}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <aside class="recos">
+    <p class="recos__text">
+      {
+        fr
+          ? 'Mes ancien·nes collègues en parlent mieux que moi.'
+          : 'Former colleagues say it better than I could.'
+      }
+    </p>
+    <a
+      class="recos__link"
+      href="https://www.linkedin.com/in/nicolas-fiascaro/details/recommendations/"
+      rel="noopener"
+      target="_blank"
+    >
+      {fr ? 'Lire les recommandations sur LinkedIn' : 'Read the recommendations on LinkedIn'}
+      <span aria-hidden="true">→</span>
+    </a>
+  </aside>
+</Section>
+
+<style>
+  .about__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .about__lead {
+    margin-top: var(--space-m);
+    font-size: var(--step-2);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-tight);
+    max-width: 22ch;
+  }
+  .about__text {
+    margin-top: var(--space-m);
+    max-width: var(--measure);
+    color: var(--ink-muted);
+  }
+
+  .journey {
+    margin: 0;
+    margin-top: var(--space-s);
+  }
+  .journey__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'period place'
+      'org org'
+      'role role';
+    gap: var(--space-3xs) var(--space-s);
+    padding-block: var(--space-m);
+    border-block-start: 1px solid var(--hairline);
+  }
+  .journey__period {
+    grid-area: period;
+    color: var(--ink-muted);
+  }
+  .journey__place {
+    grid-area: place;
+    justify-self: end;
+    color: var(--ink-muted);
+  }
+  .journey__org {
+    grid-area: org;
+    font-size: var(--step-1);
+    font-weight: var(--weight-semibold);
+  }
+  .journey__role {
+    grid-area: role;
+    color: var(--ink-muted);
+  }
+
+  .recos {
+    margin-top: var(--space-2xl);
+    padding-block: var(--space-l);
+    border-block: 1px solid var(--hairline);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-s) var(--space-l);
+  }
+  .recos__text {
+    font-size: var(--step-1);
+    max-width: 38ch;
+  }
+  .recos__link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4em;
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .recos__link span {
+    transition: transform var(--dur-base) var(--ease-out-expo);
+  }
+  .recos__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .recos__link:hover span {
+    transform: translateX(0.3em);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .recos__link:hover span {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 52rem) {
+    .about__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+  }
+</style>
