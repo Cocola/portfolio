@@ -684,9 +684,20 @@ const { nav = [] } = Astro.props;
       '.descent__stage > section:first-child .hero__role, .descent__stage > section:first-child h1, .descent__stage > section:first-child .hero__actions',
     );
 
-    // NB: "once per session" guard to re-enable in polish (P4):
-    //   && !sessionStorage.getItem('nf-intro') ... sessionStorage.setItem('nf-intro','1')
-    if (intro && media) {
+    // Once per session: the takeoff only plays on the first landing. Coming
+    // back to the home from a case study must NOT replay it — that blank intro
+    // overlay swallowed the page transition and read as "no transition".
+    const seenIntro = (() => {
+      try {
+        return sessionStorage.getItem('nf-intro') === '1';
+      } catch {
+        return false;
+      }
+    })();
+    if (intro && media && !seenIntro) {
+      try {
+        sessionStorage.setItem('nf-intro', '1');
+      } catch {}
       document.body.classList.add('is-intro');
       window.scrollTo(0, 0);
       lenis.stop();
