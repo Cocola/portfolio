@@ -45,7 +45,7 @@ export const projects: Project[] = [
       'en-us': 'UI redesign & design system for a B2C iOS/Android app',
     },
     client: 'PennyPet',
-    year: '2024',
+    year: '2025',
     summary: {
       'fr-fr':
         'Refonte de l’univers visuel et design system Figma couvrant 190 écrans, refactor React Native.',

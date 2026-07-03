@@ -1,0 +1,37 @@
+---
+project: coworking-coffee
+locale: en-us
+lead: A small Vue / Nuxt PWA to track your coffee budget in a community coworking space — no account, no server, with local persistence.
+role: Design & development
+period: '2022'
+stack:
+  - Vue
+  - Nuxt
+  - PWA
+hero: ../../assets/coworking-coffee-hero.jpg
+heroAlt: Coffee-budget tracking app interface, counter and balance.
+---
+
+## Context
+
+In a community coworking space, some services are handled outside the monthly billing. Coffee
+is one of them: the coworking buys it from a supplier, the price is set collectively, and
+everyone pays their share, either online or with coins in a shared piggy bank.
+
+In practice it’s simple — a coin per coffee, a note for the next five, or through the web.
+Except a few days later: *how many did I have again?*
+
+## The solution
+
+To avoid doing the maths from memory, I built a simple PWA that shows how many coffees you
+have left based on your budget. Tap **minus** for each coffee poured, **plus** when you add
+money to the piggy bank. When the balance goes negative, an in-app alert quietly reminds you
+to top up.
+
+## Technical details
+
+The project is built with **Vue** as the core library and **Nuxt** to quickly scaffold an
+optimised app. No account needed: it relies on the browser **LocalStorage** API to keep the
+balance from one session to the next.
+
+The code is open source on GitHub, and the app is deployed on Netlify.

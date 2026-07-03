@@ -1,0 +1,38 @@
+---
+project: coworking-coffee
+locale: fr-fr
+lead: Une petite PWA Vue / Nuxt pour suivre son budget café dans un coworking associatif, sans compte ni serveur, avec persistance locale.
+role: Design & développement
+period: '2022'
+stack:
+  - Vue
+  - Nuxt
+  - PWA
+hero: ../../assets/coworking-coffee-hero.jpg
+heroAlt: Interface de l’app de suivi du budget café, compteur et solde.
+---
+
+## Le contexte
+
+Dans un coworking associatif, certains services se gèrent en marge de la facturation
+mensuelle. Le café en fait partie : il est acheté par le coworking à un fournisseur, le prix
+est fixé de façon collégiale, et chacun règle sa consommation, en ligne ou avec des pièces
+dans la tirelire.
+
+En pratique, c’est simple — une pièce par café, un billet pour les cinq prochains, ou par le
+web. Sauf qu’au bout de quelques jours : *j’en ai pris combien, déjà ?*
+
+## La solution
+
+Pour éviter les calculs de mémoire, j’ai mis en place une PWA simple qui affiche le nombre de
+cafés restants selon le budget de l’utilisateur. On clique sur **moins** à chaque café lancé,
+sur **plus** quand on remet de l’argent dans la tirelire. Quand le solde passe au négatif, une
+alerte rappelle discrètement de recharger son budget.
+
+## Détails techniques
+
+Le projet est développé avec **Vue** comme librairie principale et **Nuxt** pour initialiser
+rapidement une app optimisée. Pas de compte : l’app s’appuie sur l’API **LocalStorage** du
+navigateur pour conserver le solde d’une session à l’autre.
+
+Le code est open source sur GitHub, et l’application est déployée sur Netlify.

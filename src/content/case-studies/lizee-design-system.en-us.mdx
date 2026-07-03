@@ -1,0 +1,48 @@
+---
+project: lizee-design-system
+locale: en-us
+lead: "A Figma design system for Lizee’s circular-logistics web app: type, colour and instance-swap components to unify and speed up HiFi mockup production."
+role: Product design & front-end
+period: 2021 — 2022
+stack:
+  - Figma
+  - React
+  - Material UI
+hero: ../../assets/lizee-design-system-hero.jpg
+heroAlt: Overview of Lizee’s Figma design system (typography, colours, components).
+---
+
+## Context
+
+In 2021, Lizee had no in-house resource to design the interfaces of its warehouse
+circular-logistics software. The first screens were designed and built on the framework
+already in place, Material UI. Faced with growing feature demand and a real need for better
+ergonomics, Lizee decided to overhaul the whole app in a V2, whose first HiFi mockups were
+delivered by an outside vendor.
+
+As screens multiplied, building a design system became urgent to guarantee maintenance and
+consistency across mockup production.
+
+## Typography
+
+Hanken Grotesk, taken from the logo, is the primary typeface: its weights cover both buttons
+and body copy. Oswald sets numeric data apart (dates, statistics). To avoid a web-performance
+hit, only its digits are loaded, which makes the file much lighter.
+
+## Colour
+
+The night-blue brand colour is primary, a light green secondary. Semantic colours handle the
+various states, all ranged from light to dark (50 to 900). Contrast meets at least WCAG 2.0 AA.
+
+## Components
+
+Some components (modals, sheets, boxes) rely on *instance swap*: instances are never
+detached, which keeps a consistent style through every design-system update.
+
+## Impact
+
+Since 2022 the design system has evolved continuously; it even absorbed a rebrand without a
+hitch. Every mockup rests on a single Figma library, and new features on the same component
+base, shipped much faster. In numbers: **3 weeks** on average for a feature’s HiFi mockups,
+**18 features** built on the design system, **2 products** (a B2B SaaS and an internal app)
+relying on it, and a **~200% productivity gain** (production time cut in half).
