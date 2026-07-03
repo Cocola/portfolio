@@ -154,6 +154,20 @@ const jsonLd = [
         )
       }
     </div>
+
+    <nav
+      class="case__foot container"
+      aria-label={fr ? 'Projet précédent et suivant' : 'Previous and next project'}
+    >
+      <a class="case__foot-link case__foot-link--prev" href={`/${lang}/projects/${prev.slug[lang]}/`}>
+        <span class="case__foot-dir mono-label">← {fr ? 'Précédent' : 'Previous'}</span>
+        <span class="case__foot-title">{prev.title[lang]}</span>
+      </a>
+      <a class="case__foot-link case__foot-link--next" href={`/${lang}/projects/${next.slug[lang]}/`}>
+        <span class="case__foot-dir mono-label">{fr ? 'Suivant' : 'Next'} →</span>
+        <span class="case__foot-title">{next.title[lang]}</span>
+      </a>
+    </nav>
   </article>
 
   <Footer slot="footer" locale={lang} />
@@ -277,5 +291,50 @@ const jsonLd = [
     border-inline-start: 2px solid var(--hairline);
     color: var(--ink-muted);
     font-style: normal;
+  }
+
+  /* Bottom project-to-project navigation. */
+  .case__foot {
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-l);
+    border-top: 1px solid var(--hairline);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-l) var(--space-xl);
+  }
+  .case__foot-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .case__foot-link--next {
+    align-items: flex-end;
+    text-align: right;
+  }
+  .case__foot-dir {
+    color: var(--ink-muted);
+    transition: color var(--dur-fast) var(--ease-out-quart);
+  }
+  .case__foot-title {
+    font-size: var(--step-1);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-tight);
+    text-wrap: balance;
+    max-width: 26ch;
+  }
+  .case__foot-link:hover .case__foot-dir {
+    color: var(--ink);
+  }
+
+  @media (max-width: 40rem) {
+    .case__foot {
+      grid-template-columns: 1fr;
+    }
+    .case__foot-link--next {
+      align-items: flex-start;
+      text-align: start;
+    }
   }
 </style>

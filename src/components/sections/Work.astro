@@ -1,5 +1,7 @@
 ---
 import Section from '../Section.astro';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import { useTranslations, type Locale } from '../../i18n/ui';
 import { projects } from '../../data/projects';
 
@@ -8,6 +10,20 @@ interface Props {
 }
 const { locale } = Astro.props;
 const t = useTranslations(locale);
+
+// Pull the hero image from each project's case study (same locale) so the
+// index can reveal it on hover. Some projects have no hero yet — those rows
+// simply don't show a preview.
+const studies = await getCollection('caseStudies', (e) => e.data.locale === locale);
+const heroById = new Map(
+  studies.map((s) => [s.data.project, { hero: s.data.hero, alt: s.data.heroAlt }]),
+);
+
+const items = projects.map((p, i) => {
+  const h = heroById.get(p.id);
+  return { ...p, num: String(i + 1).padStart(2, '0'), hero: h?.hero, heroAlt: h?.alt };
+});
+const previews = items.filter((p) => p.hero);
 ---
 
 <Section tone="light" id="work" labelledby="work-title">
@@ -17,23 +33,45 @@ const t = useTranslations(locale);
 
   <ul class="work__list" role="list">
     {
-      projects.map((p) => (
+      items.map((p) => (
         <li class="project">
-          <a class="project__link" href={`/${locale}/projects/${p.slug[locale]}/`}>
-            <span class="project__body">
-              <span class="project__title">{p.title[locale]}</span>
-              <span class="project__summary">{p.summary[locale]}</span>
-            </span>
+          <a
+            class="project__link"
+            href={`/${locale}/projects/${p.slug[locale]}/`}
+            data-project={p.id}
+          >
+            <span class="project__num mono-label">{p.num}</span>
+            <span class="project__title">{p.title[locale]}</span>
             <span class="project__meta">
               <span class="project__client">{p.client}</span>
               <span class="project__year mono-label">{p.year}</span>
             </span>
-            <span class="project__arrow" aria-hidden="true">→</span>
           </a>
         </li>
       ))
     }
   </ul>
+
+  {/* Cursor-following hero preview (desktop pointer, motion allowed). The
+      script relocates this to <body> so it escapes the descent's transforms. */}
+  <div class="work__preview" aria-hidden="true">
+    {
+      previews.map((p) => (
+        <figure class="work__preview-item" data-project={p.id}>
+          <Image
+            class="work__preview-img"
+            src={p.hero!}
+            alt=""
+            widths={[400, 720]}
+            sizes="360px"
+            format="webp"
+            quality={70}
+            loading="lazy"
+          />
+        </figure>
+      ))
+    }
+  </div>
 </Section>
 
 <style>
@@ -51,29 +89,23 @@ const t = useTranslations(locale);
   }
   .project__link {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    align-items: center;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: baseline;
     gap: var(--space-m);
     padding-block: var(--space-m);
     text-decoration: none;
+    color: var(--ink);
+    transition: opacity var(--dur-base) var(--ease-out-quart);
   }
-  .project__body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3xs);
-    transition: transform var(--dur-base) var(--ease-out-quart);
-  }
-  .project__link:hover .project__body {
-    transform: translateX(0.5rem);
+  .project__num {
+    color: var(--ink-muted);
   }
   .project__title {
-    font-size: var(--step-2);
+    font-size: var(--step-3);
     font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight);
-  }
-  .project__summary {
-    color: var(--ink-muted);
-    max-width: 60ch;
+    text-wrap: balance;
+    transition: transform var(--dur-base) var(--ease-out-quart);
   }
   .project__meta {
     display: flex;
@@ -89,28 +121,77 @@ const t = useTranslations(locale);
   .project__year {
     color: var(--ink-muted);
   }
-  .project__arrow {
-    font-size: var(--step-2);
-    color: var(--ink-muted);
-    transition:
-      transform var(--dur-base) var(--ease-out-expo),
-      color var(--dur-base) var(--ease-out-quart);
+
+  /* Editorial focus: dim the siblings when hovering the list. */
+  @media (hover: hover) and (pointer: fine) {
+    .work__list:hover .project {
+      opacity: 0.4;
+    }
+    .work__list:hover .project:hover {
+      opacity: 1;
+    }
+    .project__link:hover .project__title {
+      transform: translateX(0.5rem);
+    }
   }
-  .project__link:hover .project__arrow {
-    transform: translateX(0.4em);
-    color: var(--ink);
+
+  /* Cursor-following preview layer. */
+  .work__preview {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 22.5rem;
+    max-width: 40vw;
+    aspect-ratio: 16 / 9;
+    pointer-events: none;
+    z-index: 60;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--dur-base) var(--ease-out-quart);
+    will-change: transform;
+  }
+  .work__preview.is-visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  .work__preview-item {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    transform: scale(0.98);
+    transition:
+      opacity var(--dur-fast) var(--ease-out-quart),
+      transform var(--dur-base) var(--ease-out-quart);
+  }
+  .work__preview-item.is-active {
+    opacity: 1;
+    transform: none;
+  }
+  .work__preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--hairline);
   }
 
   @media (max-width: 52rem) {
     .project__link {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: auto 1fr;
       grid-template-areas:
-        'body body'
-        'meta arrow';
-      gap: var(--space-s);
+        'num title'
+        'num meta';
+      column-gap: var(--space-s);
+      row-gap: var(--space-2xs);
+      align-items: start;
     }
-    .project__body {
-      grid-area: body;
+    .project__num {
+      grid-area: num;
+    }
+    .project__title {
+      grid-area: title;
+      font-size: var(--step-2);
     }
     .project__meta {
       grid-area: meta;
@@ -118,24 +199,87 @@ const t = useTranslations(locale);
       align-items: baseline;
       gap: var(--space-2xs);
     }
-    .project__arrow {
-      grid-area: arrow;
-      justify-self: end;
-      align-self: center;
+  }
+
+  /* No hover target (touch) or reduced motion → skip the preview entirely. */
+  @media (hover: none), (prefers-reduced-motion: reduce) {
+    .work__preview {
+      display: none;
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .project__link:hover .project__body,
-    .project__link:hover .project__arrow {
+    .project__link:hover .project__title {
       transform: none;
     }
   }
 </style>
 
 <script>
+  // Cursor-following hero preview. Only on a fine pointer with motion allowed.
+  const section = document.getElementById('work');
+  const preview = section?.querySelector<HTMLElement>('.work__preview');
+  const list = section?.querySelector<HTMLElement>('.work__list');
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (preview && list && fine && motionOk) {
+    // Escape the descent's transformed/blurred ancestors so `position: fixed`
+    // tracks the viewport and the layer sits above the scene.
+    document.body.appendChild(preview);
+
+    const items = new Map<string, HTMLElement>();
+    for (const el of preview.querySelectorAll<HTMLElement>('[data-project]')) {
+      const id = el.getAttribute('data-project');
+      if (id) items.set(id, el);
+    }
+
+    const half = () => ({ x: preview.offsetWidth / 2, y: preview.offsetHeight / 2 });
+    let targetX = 0;
+    let targetY = 0;
+    let curX = 0;
+    let curY = 0;
+    let raf = 0;
+
+    const loop = () => {
+      curX += (targetX - curX) * 0.16;
+      curY += (targetY - curY) * 0.16;
+      const { x, y } = half();
+      preview.style.transform = `translate3d(${curX - x}px, ${curY - y}px, 0)`;
+      raf = requestAnimationFrame(loop);
+    };
+
+    const activate = (id: string | null) => {
+      const el = id ? items.get(id) : undefined;
+      for (const node of items.values()) node.classList.toggle('is-active', node === el);
+      preview.classList.toggle('is-visible', Boolean(el));
+    };
+
+    list.addEventListener('pointermove', (e) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      if (!raf) {
+        curX = targetX;
+        curY = targetY;
+        raf = requestAnimationFrame(loop);
+      }
+    });
+
+    for (const link of list.querySelectorAll<HTMLElement>('.project__link')) {
+      link.addEventListener('pointerenter', () => activate(link.getAttribute('data-project')));
+    }
+    list.addEventListener('pointerleave', () => {
+      activate(null);
+      if (raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    });
+  }
+</script>
+
+<script>
   // Shared-element view transition: tag the clicked project's title so it
   // morphs into the case-study title (`view-transition-name: nf-hero`).
-  // Only one title is ever named at a time, and only if motion is allowed.
   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     for (const link of document.querySelectorAll<HTMLAnchorElement>('.project__link')) {
       link.addEventListener('click', () => {
