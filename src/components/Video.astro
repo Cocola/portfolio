@@ -1,0 +1,80 @@
+---
+interface Props {
+  /** Path under /public, e.g. "/videos/demo.mp4". */
+  src: string;
+  /** Intrinsic pixel dimensions — reserve the box to avoid layout shift. */
+  width: number;
+  height: number;
+  caption?: string;
+  /** Break out wider than the reading column, up to the masthead width. */
+  wide?: boolean;
+}
+const { src, width, height, caption, wide = false } = Astro.props;
+---
+
+<figure class:list={['case-video', { 'case-video--wide': wide }]}>
+  <video
+    class="case-video__el"
+    src={src}
+    width={width}
+    height={height}
+    style={`aspect-ratio: ${width} / ${height};`}
+    loop
+    muted
+    playsinline
+    preload="metadata"
+    controls
+    aria-label={caption}
+    data-showcase></video>
+  {caption && <figcaption class="case-video__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .case-video {
+    margin-block: var(--space-xl);
+  }
+  /* Break out of the centered reading column to a wider, page-centered band. */
+  .case-video--wide {
+    width: min(64rem, 92vw);
+    margin-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+  .case-video__el {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--hairline);
+    background: var(--surface, #0e0e0e);
+  }
+  .case-video__caption {
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    text-wrap: pretty;
+  }
+</style>
+
+<script>
+  // Progressive enhancement: silent showcase clips autoplay-loop while in view
+  // (and pause out of view). Under reduced motion we leave the native controls
+  // so nothing moves until the user chooses to play.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clips = document.querySelectorAll<HTMLVideoElement>('video[data-showcase]');
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const v = e.target as HTMLVideoElement;
+          if (e.isIntersecting) void v.play().catch(() => {});
+          else v.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    for (const v of clips) {
+      v.removeAttribute('controls');
+      io.observe(v);
+    }
+  }
+</script>

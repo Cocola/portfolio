@@ -12,6 +12,8 @@ hero: ../../assets/coworking-coffee-hero.jpg
 heroAlt: Coffee-budget tracking app interface, counter and balance.
 ---
 
+import Video from '../../components/Video.astro';
+
 ## Context
 
 In a community coworking space, some services are handled outside the monthly billing. Coffee
@@ -28,10 +30,26 @@ have left based on your budget. Tap **minus** for each coffee poured, **plus** w
 money to the piggy bank. When the balance goes negative, an in-app alert quietly reminds you
 to top up.
 
+<Video
+  src="/videos/app_alert_showcase.mp4"
+  width={1920}
+  height={1080}
+  wide
+  caption="The negative-balance alert, prompting a top-up."
+/>
+
 ## Technical details
 
 The project is built with **Vue** as the core library and **Nuxt** to quickly scaffold an
 optimised app. No account needed: it relies on the browser **LocalStorage** API to keep the
 balance from one session to the next.
+
+<Video
+  src="/videos/add_to_homescreen_showcase.mp4"
+  width={1920}
+  height={1080}
+  wide
+  caption="Installing the PWA to the phone’s home screen."
+/>
 
 The code is open source on GitHub, and the app is deployed on Netlify.

@@ -12,6 +12,8 @@ hero: ../../assets/coworking-coffee-hero.jpg
 heroAlt: Interface de l’app de suivi du budget café, compteur et solde.
 ---
 
+import Video from '../../components/Video.astro';
+
 ## Le contexte
 
 Dans un coworking associatif, certains services se gèrent en marge de la facturation
@@ -29,10 +31,26 @@ cafés restants selon le budget de l’utilisateur. On clique sur **moins** à c
 sur **plus** quand on remet de l’argent dans la tirelire. Quand le solde passe au négatif, une
 alerte rappelle discrètement de recharger son budget.
 
+<Video
+  src="/videos/app_alert_showcase.mp4"
+  width={1920}
+  height={1080}
+  wide
+  caption="L’alerte de solde négatif, quand il faut recharger la tirelire."
+/>
+
 ## Détails techniques
 
 Le projet est développé avec **Vue** comme librairie principale et **Nuxt** pour initialiser
 rapidement une app optimisée. Pas de compte : l’app s’appuie sur l’API **LocalStorage** du
 navigateur pour conserver le solde d’une session à l’autre.
+
+<Video
+  src="/videos/add_to_homescreen_showcase.mp4"
+  width={1920}
+  height={1080}
+  wide
+  caption="Installation de la PWA sur l’écran d’accueil du téléphone."
+/>
 
 Le code est open source sur GitHub, et l’application est déployée sur Netlify.

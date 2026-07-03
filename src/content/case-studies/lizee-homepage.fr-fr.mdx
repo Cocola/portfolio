@@ -11,6 +11,8 @@ hero: ../../assets/lizee-homepage-hero.jpg
 heroAlt: Nouveau dashboard d’accueil du RMS de Lizee, contextualisé par rôle.
 ---
 
+import Video from '../../components/Video.astro';
+
 ## Le contexte
 
 Après enquêtes, retours utilisateurs et analyse de sessions, l’équipe produit de Lizee
@@ -53,12 +55,28 @@ l’aise. La solution vise donc les utilisateurs novices en magasin : une vue pe
 rôle, opérationnelle et didactique pour le vendeur, statistique pour le responsable,
 adaptable ensuite aux rôles en entrepôt.
 
+<Video
+  src="/videos/hp_vendeur.mp4"
+  width={1438}
+  height={800}
+  wide
+  caption="La vue d’accueil personnalisée pour le vendeur en magasin."
+/>
+
 ## Du wireframe au prototype HiFi
 
 Après plusieurs essais sur Figma mêlant sketch et wireframe HD, les tests utilisateurs sont
 concluants : la simplicité voulue ressort naturellement chez les testeurs. Le Design System
 fournit l’essentiel des composants, ce qui permet une nouvelle série de tests desktop et
 mobile pour chaque rôle.
+
+<Video
+  src="/videos/hp_respo.mp4"
+  width={1438}
+  height={800}
+  wide
+  caption="La page d’accueil responsive, du desktop au mobile."
+/>
 
 ## Mesurer le succès
 

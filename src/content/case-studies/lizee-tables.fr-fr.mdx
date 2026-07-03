@@ -12,6 +12,8 @@ hero: ../../assets/lizee-tables-hero.jpg
 heroAlt: Tableaux repensés du RMS de Lizee, filtrables et personnalisables.
 ---
 
+import Video from '../../components/Video.astro';
+
 ## Le contexte
 
 En haute saison, les métiers de l’entrepôt (managers, opérateurs, responsables SAV) doivent
@@ -53,6 +55,14 @@ L’effort se concentre d’abord sur la fonctionnalité la plus critique. Les c
 maquettes sont produits dans le Design System, puis testés auprès d’un panel interne via
 **Maze**.
 
+<Video
+  src="/videos/table_filter.mp4"
+  width={1860}
+  height={1080}
+  wide
+  caption="Le filtrage et le tri des colonnes d’un tableau."
+/>
+
 ## Tests utilisateurs
 
 L’étude Maze révèle une vraie simplicité et des parcours presque tous complétés, mais aussi
@@ -65,6 +75,14 @@ Plusieurs semaines d’itérations ont été nécessaires pour aboutir à un com
 souple dans le Design System, laissant toute latitude de composition. Une fois validées, les
 maquettes ont été implémentées progressivement dans l’app, pour rester réactif aux
 ajustements tout en planifiant les fonctionnalités suivantes.
+
+<Video
+  src="/videos/table_batch.mp4"
+  width={1860}
+  height={1080}
+  wide
+  caption="La sélection et l’édition en masse sur un tableau."
+/>
 
 ## Impact
 
