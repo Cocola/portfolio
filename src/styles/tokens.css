@@ -74,7 +74,6 @@
   --font-sans: 'Switzer', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, 'SF Mono',
     'Menlo', monospace;
-  --font-pixel: 'Silkscreen', ui-monospace, monospace; /* altimeter (instrument) */
 
   /* Fluid scale (ratio ~1.28), display cap ~6rem */
   --step--1: clamp(0.83rem, 0.79rem + 0.18vw, 0.94rem);

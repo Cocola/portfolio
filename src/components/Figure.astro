@@ -1,0 +1,51 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  /** Imported image (astro:assets) — enables width/format optimisation. */
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  /** Break out wider than the reading column, up to the masthead width. */
+  wide?: boolean;
+}
+const { src, alt, caption, wide = false } = Astro.props;
+---
+
+<figure class:list={['case-figure', { 'case-figure--wide': wide }]}>
+  <Image
+    class="case-figure__img"
+    src={src}
+    alt={alt}
+    widths={[600, 900, 1400]}
+    sizes={wide ? '(max-width: 68rem) 92vw, 64rem' : '(max-width: 44rem) 92vw, 44rem'}
+    format="webp"
+    quality={78}
+  />
+  {caption && <figcaption class="case-figure__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .case-figure {
+    margin-block: var(--space-xl);
+  }
+  /* Break out of the centered reading column to a wider, page-centered band. */
+  .case-figure--wide {
+    width: min(64rem, 92vw);
+    margin-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+  .case-figure__img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-m);
+    border: 1px solid var(--hairline);
+  }
+  .case-figure__caption {
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    text-wrap: pretty;
+  }
+</style>

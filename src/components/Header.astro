@@ -15,7 +15,6 @@ interface Props {
 const { locale, variant = 'home' } = Astro.props;
 const t = useTranslations(locale);
 const other = otherLocale(locale);
-const fr = locale === 'fr-fr';
 
 // Language switch link: same page, other locale.
 const segments = Astro.url.pathname.split('/').filter(Boolean);
@@ -35,13 +34,10 @@ const home = `/${locale}/`;
 
     <nav class="site-header__nav" aria-label={locale === 'fr-fr' ? 'Navigation principale' : 'Primary navigation'}>
       {
-        variant === 'article' ? (
-          <a class="site-header__back" href={`/${locale}/#work`}>
-            {fr ? '← Projets' : '← Work'}
-          </a>
-        ) : (
-          /* Section links: hidden in descent mode (desktop) where the nav moves
-             onto the altimeter; kept for static / mobile mode. */
+        /* Section links only in descent mode; hidden there on desktop (nav is
+           on the altimeter), kept for static / mobile. Article pages show no
+           section links — the logo returns home. */
+        variant === 'home' && (
           <span class="site-header__links">
             <a href="#work">{t('nav.work')}</a>
             <a href="#about">{t('nav.about')}</a>

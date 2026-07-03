@@ -8,16 +8,20 @@ import { glob } from 'astro/loaders';
  */
 const caseStudies = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/case-studies' }),
-  schema: z.object({
-    /** Matches `Project.id` in data/projects.ts. */
-    project: z.string(),
-    locale: z.enum(['fr-fr', 'en-us']),
-    /** One-line outcome shown under the title (TL;DR). */
-    lead: z.string(),
-    role: z.string(),
-    period: z.string(),
-    stack: z.array(z.string()).default([]),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      /** Matches `Project.id` in data/projects.ts. */
+      project: z.string(),
+      locale: z.enum(['fr-fr', 'en-us']),
+      /** One-line outcome shown under the title (TL;DR). */
+      lead: z.string(),
+      role: z.string(),
+      period: z.string(),
+      stack: z.array(z.string()).default([]),
+      /** Optional cover image — the case study renders it only when set. */
+      hero: image().optional(),
+      heroAlt: z.string().optional(),
+    }),
 });
 
 export const collections = { caseStudies };

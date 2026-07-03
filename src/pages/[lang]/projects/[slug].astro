@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/Header.astro';
 import Footer from '../../../components/Footer.astro';
@@ -29,8 +30,10 @@ const studies = await getCollection(
 const study = studies[0];
 const Content = study ? (await render(study)).Content : null;
 
-// Next project in the index (wraps around) for the footer nav.
+// Adjacent projects for the prev/next pager (wraps around). There is no
+// separate "all projects" index page — navigation stays project-to-project.
 const idx = projects.findIndex((p) => p.id === id);
+const prev = projects[(idx - 1 + projects.length) % projects.length];
 const next = projects[(idx + 1) % projects.length];
 
 const disciplines = project.tags.map((tag) =>
@@ -59,9 +62,28 @@ const jsonLd = [
   <Header slot="header" locale={lang} variant="article" />
 
   <article class="case">
+    <nav
+      class="case__pager container"
+      aria-label={fr ? 'Navigation entre projets' : 'Project navigation'}
+    >
+      <a class="case__pager-link" href={`/${lang}/projects/${prev.slug[lang]}/`}>
+        <span class="case__pager-dir mono-label">← {fr ? 'Précédent' : 'Previous'}</span>
+        <span class="case__pager-name">{prev.title[lang]}</span>
+      </a>
+      <a
+        class="case__pager-link case__pager-link--next"
+        href={`/${lang}/projects/${next.slug[lang]}/`}
+      >
+        <span class="case__pager-dir mono-label">{fr ? 'Suivant' : 'Next'} →</span>
+        <span class="case__pager-name">{next.title[lang]}</span>
+      </a>
+    </nav>
+
     <header class="case__hero container">
       <p class="case__eyebrow mono-label">{project.client} · {project.year}</p>
-      <h1 class="case__title">{project.title[lang]}</h1>
+      <h1 class="case__title" style="view-transition-name: nf-hero">
+        {project.title[lang]}
+      </h1>
       {study && <p class="case__lead">{study.data.lead}</p>}
 
       <dl class="case__meta">
@@ -96,6 +118,22 @@ const jsonLd = [
       </dl>
     </header>
 
+    {
+      study?.data.hero && (
+        <figure class="case__cover container">
+          <Image
+            class="case__cover-img"
+            src={study.data.hero}
+            alt={study.data.heroAlt ?? project.title[lang]}
+            widths={[900, 1400, 2000]}
+            sizes="(max-width: 78rem) 92vw, 78rem"
+            format="webp"
+            quality={80}
+          />
+        </figure>
+      )
+    }
+
     <div class="case__body container">
       {
         Content ? (
@@ -111,14 +149,6 @@ const jsonLd = [
         )
       }
     </div>
-
-    <nav class="case__more container" aria-label={fr ? 'Autres projets' : 'More work'}>
-      <a class="case__next" href={`/${lang}/projects/${next.slug[lang]}/`}>
-        <span class="case__next-label mono-label">{fr ? 'Projet suivant' : 'Next project'}</span>
-        <span class="case__next-title">{next.title[lang]}</span>
-      </a>
-      <a class="case__back-all" href={`/${lang}/#work`}>{fr ? 'Tous les projets' : 'All work'} →</a>
-    </nav>
   </article>
 
   <Footer slot="footer" locale={lang} />
@@ -129,9 +159,42 @@ const jsonLd = [
     padding-block-start: calc(var(--space-3xl) + var(--space-l));
     padding-block-end: var(--space-3xl);
   }
-  /* The article spans the full container (the title and any full-width media
-     use all of it); the reading text and meta are capped narrower and
-     left-aligned to the same edge. */
+
+  /* Prev/next between projects (no "all projects" index page). */
+  .case__pager {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-m);
+    margin-bottom: var(--space-2xl);
+  }
+  .case__pager-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    max-width: 45%;
+    text-decoration: none;
+  }
+  .case__pager-link--next {
+    margin-inline-start: auto;
+    text-align: right;
+  }
+  .case__pager-dir {
+    color: var(--ink-muted);
+  }
+  .case__pager-name {
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color var(--dur-fast) var(--ease-out-quart);
+  }
+  .case__pager-link:hover .case__pager-name {
+    color: var(--ink);
+  }
+
+  /* Header (eyebrow, title, meta) is wide and left-aligned; only the long-form
+     body is capped and centered on the page. */
   .case__eyebrow {
     color: var(--ink-muted);
     margin-bottom: var(--space-s);
@@ -139,8 +202,6 @@ const jsonLd = [
   .case__title {
     font-size: var(--step-5);
   }
-  /* Header (eyebrow, title, lead, meta) is wide and left-aligned; only the
-     long-form body is capped and centered on the page. */
   .case__lead {
     margin-top: var(--space-m);
     font-size: var(--step-2);
@@ -166,6 +227,17 @@ const jsonLd = [
   .case__meta dd {
     margin: 0;
     font-size: var(--step-0);
+  }
+
+  /* Optional full-width cover image (only rendered when `hero` is set). */
+  .case__cover {
+    margin-top: var(--space-2xl);
+  }
+  .case__cover-img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-l);
+    border: 1px solid var(--hairline);
   }
 
   .case__body {
@@ -207,49 +279,5 @@ const jsonLd = [
     border-inline-start: 2px solid var(--hairline);
     color: var(--ink-muted);
     font-style: normal;
-  }
-
-  .case__more {
-    margin-top: var(--space-3xl);
-    padding-top: var(--space-l);
-    border-top: 1px solid var(--hairline);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: end;
-    justify-content: space-between;
-    gap: var(--space-m);
-  }
-  .case__next {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3xs);
-    text-decoration: none;
-  }
-  .case__next-label {
-    color: var(--ink-muted);
-  }
-  .case__next-title {
-    font-family: var(--font-display);
-    font-size: var(--step-2);
-    letter-spacing: var(--tracking-display);
-    transition: transform var(--dur-base) var(--ease-out-quart);
-  }
-  .case__next:hover .case__next-title {
-    transform: translateX(0.4rem);
-  }
-  .case__back-all {
-    text-decoration: none;
-    color: var(--ink-muted);
-    border-block-end: 1px solid currentColor;
-    padding-block-end: 0.1em;
-  }
-  .case__back-all:hover {
-    color: var(--ink);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .case__next:hover .case__next-title {
-      transform: none;
-    }
   }
 </style>
