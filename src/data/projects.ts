@@ -1,6 +1,8 @@
 import type { Locale } from '../i18n/ui';
 
 export interface Project {
+  /** Stable, locale-agnostic id — links a project to its MDX case study. */
+  id: string;
   /** Slugs per locale (preserve the existing ones for SEO / 301 redirects). */
   slug: Record<Locale, string>;
   title: Record<Locale, string>;
@@ -8,11 +10,32 @@ export interface Project {
   year: string;
   summary: Record<Locale, string>;
   tags: ('design' | 'dev')[];
+  /** Surfaced first in the index. */
+  featured?: boolean;
 }
 
-/** Temporary P1 source — migrated to MDX content collections in P2. */
+/** Temporary P1 index source — long-form bodies live in the `case-studies` collection. */
 export const projects: Project[] = [
   {
+    id: 'methode-aristote',
+    slug: { 'fr-fr': 'methode-aristote', 'en-us': 'methode-aristote' },
+    title: {
+      'fr-fr': 'Design system & outillage design-to-code pour une EdTech IA',
+      'en-us': 'Design system & design-to-code tooling for an AI EdTech',
+    },
+    client: 'Méthode Aristote',
+    year: '2026',
+    summary: {
+      'fr-fr':
+        'Design System v2 (shadcn), pipeline de design tokens ↔ code et agents internes pour une plateforme de soutien scolaire humain + IA.',
+      'en-us':
+        'Design System v2 (shadcn), a design-tokens↔code pipeline and internal AI agents for a human + AI tutoring platform.',
+    },
+    tags: ['design', 'dev'],
+    featured: true,
+  },
+  {
+    id: 'pennypet-app',
     slug: {
       'fr-fr': 'redesign-ui-et-design-system-pour-une-app-b2c-iosandroid',
       'en-us': 'redesign-ui-et-design-system-pour-une-app-b2c-iosandroid',
@@ -32,6 +55,7 @@ export const projects: Project[] = [
     tags: ['design', 'dev'],
   },
   {
+    id: 'lizee-design-system',
     slug: {
       'fr-fr': 'design-system-for-a-responsive-app',
       'en-us': 'design-system-for-a-responsive-app',
@@ -51,6 +75,7 @@ export const projects: Project[] = [
     tags: ['design', 'dev'],
   },
   {
+    id: 'lizee-homepage',
     slug: {
       'fr-fr': 'refonte-saas-homepage',
       'en-us': 'rebuild-a-saas-homepage',
@@ -70,6 +95,7 @@ export const projects: Project[] = [
     tags: ['design'],
   },
   {
+    id: 'coworking-coffee',
     slug: {
       'fr-fr': 'gestion-dun-budget-cafe-dans-un-coworking',
       'en-us': 'handle-coffee-budget-in-a-coworking',
@@ -87,6 +113,7 @@ export const projects: Project[] = [
     tags: ['dev'],
   },
   {
+    id: 'lizee-tables',
     slug: { 'fr-fr': 'refonte-tableaux', 'en-us': 'table-redesign' },
     title: {
       'fr-fr': 'Débloquer de nouvelles fonctionnalités avec des tableaux',
@@ -103,6 +130,7 @@ export const projects: Project[] = [
     tags: ['design', 'dev'],
   },
   {
+    id: 'lizee-prototype',
     slug: {
       'fr-fr': 'presenter-les-fonctionnalites-dans-un-prototype',
       'en-us': 'showcase-upcoming-features-in-a-prototype',
