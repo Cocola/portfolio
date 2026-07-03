@@ -275,13 +275,24 @@ const previews = items.filter((p) => p.hero);
     for (const link of list.querySelectorAll<HTMLElement>('.project__link')) {
       link.addEventListener('pointerenter', () => activate(link.getAttribute('data-project')));
     }
-    list.addEventListener('pointerleave', () => {
+    const stop = () => {
       activate(null);
       if (raf) {
         cancelAnimationFrame(raf);
         raf = 0;
       }
-    });
+    };
+    list.addEventListener('pointerleave', stop);
+
+    // In the descent the list's pointer-events are gated on the section being
+    // settled. If the station flies away mid-hover, no pointerleave fires — so
+    // watch `data-settled` and force the preview to hide when it's dropped.
+    const workSection = document.getElementById('work');
+    if (workSection) {
+      new MutationObserver(() => {
+        if (!workSection.hasAttribute('data-settled')) stop();
+      }).observe(workSection, { attributes: true, attributeFilter: ['data-settled'] });
+    }
   }
 </script>
 

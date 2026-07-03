@@ -382,6 +382,11 @@ const { nav = [] } = Astro.props;
   .descent.is-dolly :global(.project__summary) {
     display: none;
   }
+  /* Arm the projects hover preview only when the section is the sharp, settled
+     station — never while it's still flying toward the camera. */
+  .descent.is-dolly :global(#work:not([data-settled]) .work__list) {
+    pointer-events: none;
+  }
   /* Journey */
   .descent.is-dolly :global(.journey__item) {
     padding-block: var(--space-xs);
@@ -497,6 +502,7 @@ const { nav = [] } = Astro.props;
           (tickProgress(Number(tick.dataset.navIndex)) * 100).toFixed(2) + '%';
       });
       let activeTick = -1;
+      let settledIndex = -1;
       let headerTucked = false;
 
       const render = (progress: number) => {
@@ -573,6 +579,15 @@ const { nav = [] } = Astro.props;
             else tick.removeAttribute('data-active');
           }
           activeTick = active;
+        }
+        // Mark the settled (snapped) station: only during its dwell is the
+        // section sharp and readable. Interactive overlays (the projects hover
+        // preview) arm off this, so nothing fires while a section is still
+        // flying in (|p| < 0.5 but not yet settled).
+        if (dwellIndex !== settledIndex) {
+          if (settledIndex >= 0) sections[settledIndex]?.removeAttribute('data-settled');
+          if (dwellIndex >= 0) sections[dwellIndex]?.setAttribute('data-settled', '');
+          settledIndex = dwellIndex;
         }
         // The header tucks up as the landing approaches:
         // the final screen (Nicolas Fiascaro signature) stands alone, no chrome.
