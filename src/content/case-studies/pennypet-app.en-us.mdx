@@ -1,0 +1,61 @@
+---
+project: pennypet-app
+locale: en-us
+lead: A new visual world, a Figma ↔ Tailwind design system, and a React Native refactor of nearly 190 screens for a B2C pet-neobank app.
+role: Product design & front-end
+period: '2024'
+stack:
+  - React Native
+  - NativeWind
+  - Figma
+  - Tailwind
+hero: ../../assets/pennypet-hero.png
+heroAlt: PennyPet app screens after the redesign, carried by the pink-violet gradient.
+---
+
+## Context
+
+PennyPet is a B2C app for *pet parents*: a bank account with partner cashback and
+flat-rate pet insurance. Several redesigns handed to outside vendors had led nowhere; only
+one visual lead held up, a pink-violet gradient for highlighted text, and it was
+underused.
+
+I proposed going all the way: a complete visual world, a modernised brand image, and
+reworked flows. The launch of a gamification feature was the ideal way in for the redesign.
+
+## Typography
+
+Work Sans, the original typeface, lacked character. I replaced it with Outfit, more
+contemporary and distinctive, and reworked the typographic hierarchy (sizes, weights,
+spacing) for legibility and balance across the screens.
+
+## Colour
+
+The pink-violet gradient becomes the centrepiece: it paces the interface and highlights
+key actions and the gamification. I rationalised the secondary tints into a coherent,
+accessible, easily-extensible palette, which also carries the presentation of the three
+plans. Accessibility was held to at least WCAG AA.
+
+## Design System
+
+I built a full design system in Figma, backed by Tailwind tokens through a community file:
+a direct match between design and code, fewer gaps, faster development. Six main screen
+templates were enough to cover nearly 190 screens, maximising reuse.
+
+## Development
+
+The UI redesign came with a full React Native refactor:
+
+- migrating NativeWind v3 to v4;
+- rebuilding the ~190 screens on the new templates;
+- a unified component library.
+
+Shipping screens became noticeably faster and more reliable. About five weeks were enough
+to migrate the whole app.
+
+## Impact
+
+The new identity was very well received by users and investors alike, strengthening
+PennyPet’s credibility. Internally, the design system and templates brought a clear
+productivity gain (roughly **200%** across design and dev) while clarifying the technical
+stack: **190 screens** rebuilt, **6 reusable templates**, in **5 weeks**.
