@@ -11,22 +11,41 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-// Pull the hero image from each project's case study (same locale) so the
-// index can reveal it on hover. Some projects have no hero yet — those rows
-// simply don't show a preview.
+// Pull the hero image from each project's case study (same locale) to back the
+// index with a full-bleed, cursor-tilted image. Projects without a hero yet
+// simply show the neutral tinted backdrop when hovered.
 const studies = await getCollection('caseStudies', (e) => e.data.locale === locale);
-const heroById = new Map(
-  studies.map((s) => [s.data.project, { hero: s.data.hero, alt: s.data.heroAlt }]),
-);
+const heroById = new Map(studies.map((s) => [s.data.project, s.data.hero]));
 
-const items = projects.map((p, i) => {
-  const h = heroById.get(p.id);
-  return { ...p, num: String(i + 1).padStart(2, '0'), hero: h?.hero, heroAlt: h?.alt };
-});
+const items = projects.map((p, i) => ({
+  ...p,
+  num: String(i + 1).padStart(2, '0'),
+  hero: heroById.get(p.id),
+}));
 const previews = items.filter((p) => p.hero);
 ---
 
 <Section tone="light" id="work" labelledby="work-title">
+  {/* Full-bleed image backdrop, tilted by the cursor. Sits inside the section
+      (so it scales with the descent) but breaks out of the reading column. */}
+  <div class="work__bg" aria-hidden="true">
+    {
+      previews.map((p) => (
+        <Image
+          class="work__bg-img"
+          data-project={p.id}
+          src={p.hero!}
+          alt=""
+          widths={[900, 1400, 2000]}
+          sizes="100vw"
+          format="webp"
+          quality={66}
+          loading="lazy"
+        />
+      ))
+    }
+  </div>
+
   <header class="work__head">
     <h2 id="work-title" class="mono-label">{t('work.title')}</h2>
   </header>
@@ -51,30 +70,69 @@ const previews = items.filter((p) => p.hero);
       ))
     }
   </ul>
-
-  {/* Cursor-following hero preview (desktop pointer, motion allowed). The
-      script relocates this to <body> so it escapes the descent's transforms. */}
-  <div class="work__preview" aria-hidden="true">
-    {
-      previews.map((p) => (
-        <figure class="work__preview-item" data-project={p.id}>
-          <Image
-            class="work__preview-img"
-            src={p.hero!}
-            alt=""
-            widths={[400, 720]}
-            sizes="360px"
-            format="webp"
-            quality={70}
-            loading="lazy"
-          />
-        </figure>
-      ))
-    }
-  </div>
 </Section>
 
 <style>
+  /* --- Cursor-tilted image backdrop --- */
+  .work__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity var(--dur-slow, 0.45s) var(--ease-out-quart);
+    transform: perspective(1400px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+      scale(1.08) translate3d(var(--px, 0px), var(--py, 0px), 0);
+    transform-origin: center;
+    will-change: transform, opacity;
+  }
+  .work__bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    filter: grayscale(1);
+    transition:
+      opacity var(--dur-slow, 0.45s) var(--ease-out-quart),
+      filter var(--dur-slow, 0.45s) var(--ease-out-quart);
+  }
+  /* Ambient at rest; full presence + a hint of colour on hover. */
+  .work__bg-img.is-active {
+    opacity: 0.5;
+  }
+  .work__bg.is-hovering .work__bg-img.is-active {
+    opacity: 1;
+    filter: grayscale(0.35);
+  }
+  /* Scrim: keeps the titles readable, weighted toward the left column, and
+     tints the image toward the theme so it reads in light and dark. */
+  .work__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in oklch, var(--page) 84%, transparent),
+        color-mix(in oklch, var(--page) 48%, transparent) 68%
+      ),
+      color-mix(in oklch, var(--page) 28%, transparent);
+  }
+  /* No hover target or reduced motion → never show the backdrop. */
+  @media (hover: none), (prefers-reduced-motion: reduce) {
+    .work__bg {
+      display: none;
+    }
+  }
+
+  /* --- Index list (above the backdrop) --- */
+  .work__head,
+  .work__list {
+    position: relative;
+    z-index: 1;
+  }
   .work__head {
     margin-bottom: var(--space-l);
   }
@@ -135,48 +193,6 @@ const previews = items.filter((p) => p.hero);
     }
   }
 
-  /* Cursor-following preview layer. */
-  .work__preview {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 22.5rem;
-    max-width: 40vw;
-    aspect-ratio: 16 / 9;
-    pointer-events: none;
-    z-index: 60;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--dur-base) var(--ease-out-quart);
-    will-change: transform;
-  }
-  .work__preview.is-visible {
-    opacity: 1;
-    visibility: visible;
-  }
-  .work__preview-item {
-    position: absolute;
-    inset: 0;
-    margin: 0;
-    opacity: 0;
-    transform: scale(0.98);
-    transition:
-      opacity var(--dur-fast) var(--ease-out-quart),
-      transform var(--dur-base) var(--ease-out-quart);
-  }
-  .work__preview-item.is-active {
-    opacity: 1;
-    transform: none;
-  }
-  .work__preview-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: var(--radius-m);
-    border: 1px solid var(--hairline);
-    filter: grayscale(1);
-  }
-
   @media (max-width: 52rem) {
     .project__link {
       grid-template-columns: auto 1fr;
@@ -201,13 +217,6 @@ const previews = items.filter((p) => p.hero);
       gap: var(--space-2xs);
     }
   }
-
-  /* No hover target (touch) or reduced motion → skip the preview entirely. */
-  @media (hover: none), (prefers-reduced-motion: reduce) {
-    .work__preview {
-      display: none;
-    }
-  }
   @media (prefers-reduced-motion: reduce) {
     .project__link:hover .project__title {
       transform: none;
@@ -216,83 +225,96 @@ const previews = items.filter((p) => p.hero);
 </style>
 
 <script>
-  // Cursor-following hero preview. Only on a fine pointer with motion allowed.
+  // Full-bleed backdrop that tilts with the cursor and crossfades to the
+  // hovered project. Desktop pointer + motion only; armed by the descent via
+  // `data-settled` (pointer-events on the list are gated there too).
   const section = document.getElementById('work');
-  const preview = section?.querySelector<HTMLElement>('.work__preview');
+  const bg = section?.querySelector<HTMLElement>('.work__bg');
   const list = section?.querySelector<HTMLElement>('.work__list');
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (preview && list && fine && motionOk) {
-    // Escape the descent's transformed/blurred ancestors so `position: fixed`
-    // tracks the viewport and the layer sits above the scene.
-    document.body.appendChild(preview);
-
-    const items = new Map<string, HTMLElement>();
-    for (const el of preview.querySelectorAll<HTMLElement>('[data-project]')) {
+  if (section && bg && list && fine && motionOk) {
+    const imgs = new Map<string, HTMLElement>();
+    for (const el of bg.querySelectorAll<HTMLElement>('[data-project]')) {
       const id = el.getAttribute('data-project');
-      if (id) items.set(id, el);
+      if (id) imgs.set(id, el);
     }
+    // Ambient backdrop at rest = the first project that has an image.
+    const first = bg.querySelector<HTMLElement>('.work__bg-img');
+    const firstId = first?.getAttribute('data-project') ?? null;
+    let activeImg: HTMLElement | null = first ?? null;
+    activeImg?.classList.add('is-active');
 
-    // Offset the preview to the pointer's lower-right (cursor sits near its
-    // top-left corner) so it never covers the hovered row, and clamp it inside
-    // the viewport so it can't clip off-screen near the edges.
-    const OFFSET = 28;
-    const MARGIN = 16;
-    let targetX = 0;
-    let targetY = 0;
-    let curX = 0;
-    let curY = 0;
+    const setActive = (id: string | null) => {
+      const el = id ? (imgs.get(id) ?? null) : null;
+      if (el === activeImg) return;
+      activeImg?.classList.remove('is-active');
+      activeImg = el;
+      activeImg?.classList.add('is-active');
+    };
+
+    const MAX_ROT = 4; // deg
+    const MAX_SHIFT = 12; // px
+    let tRx = 0;
+    let tRy = 0;
+    let tPx = 0;
+    let tPy = 0;
+    let rx = 0;
+    let ry = 0;
+    let px = 0;
+    let py = 0;
     let raf = 0;
 
     const loop = () => {
-      curX += (targetX - curX) * 0.16;
-      curY += (targetY - curY) * 0.16;
-      const w = preview.offsetWidth;
-      const h = preview.offsetHeight;
-      const px = Math.min(curX + OFFSET, window.innerWidth - w - MARGIN);
-      const py = Math.min(curY + OFFSET, window.innerHeight - h - MARGIN);
-      preview.style.transform = `translate3d(${px}px, ${py}px, 0)`;
-      raf = requestAnimationFrame(loop);
-    };
-
-    const activate = (id: string | null) => {
-      const el = id ? items.get(id) : undefined;
-      for (const node of items.values()) node.classList.toggle('is-active', node === el);
-      preview.classList.toggle('is-visible', Boolean(el));
-    };
-
-    list.addEventListener('pointermove', (e) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-      if (!raf) {
-        curX = targetX;
-        curY = targetY;
+      rx += (tRx - rx) * 0.08;
+      ry += (tRy - ry) * 0.08;
+      px += (tPx - px) * 0.08;
+      py += (tPy - py) * 0.08;
+      bg.style.setProperty('--rx', rx.toFixed(3) + 'deg');
+      bg.style.setProperty('--ry', ry.toFixed(3) + 'deg');
+      bg.style.setProperty('--px', px.toFixed(2) + 'px');
+      bg.style.setProperty('--py', py.toFixed(2) + 'px');
+      if (Math.abs(tRx - rx) + Math.abs(tRy - ry) + Math.abs(tPx - px) + Math.abs(tPy - py) > 0.01) {
         raf = requestAnimationFrame(loop);
-      }
-    });
-
-    for (const link of list.querySelectorAll<HTMLElement>('.project__link')) {
-      link.addEventListener('pointerenter', () => activate(link.getAttribute('data-project')));
-    }
-    const stop = () => {
-      activate(null);
-      if (raf) {
-        cancelAnimationFrame(raf);
+      } else {
         raf = 0;
       }
     };
-    list.addEventListener('pointerleave', stop);
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(loop);
+    };
 
-    // In the descent the list's pointer-events are gated on the section being
-    // settled. If the station flies away mid-hover, no pointerleave fires — so
-    // watch `data-settled` and force the preview to hide when it's dropped.
-    const workSection = document.getElementById('work');
-    if (workSection) {
-      new MutationObserver(() => {
-        if (!workSection.hasAttribute('data-settled')) stop();
-      }).observe(workSection, { attributes: true, attributeFilter: ['data-settled'] });
+    section.addEventListener('pointermove', (e) => {
+      const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+      const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+      tRy = nx * MAX_ROT;
+      tRx = -ny * MAX_ROT;
+      tPx = nx * MAX_SHIFT;
+      tPy = ny * MAX_SHIFT;
+      kick();
+    });
+
+    for (const row of list.querySelectorAll<HTMLElement>('.project__link')) {
+      row.addEventListener('pointerenter', () => {
+        bg.classList.add('is-hovering');
+        setActive(row.getAttribute('data-project'));
+      });
     }
+
+    const rest = () => {
+      bg.classList.remove('is-hovering');
+      setActive(firstId);
+      tRx = tRy = tPx = tPy = 0;
+      kick();
+    };
+    section.addEventListener('pointerleave', rest);
+
+    // The station's list pointer-events are gated on `data-settled`; if it flies
+    // away mid-hover no pointerleave fires, so reset off the attribute too.
+    new MutationObserver(() => {
+      if (!section.hasAttribute('data-settled')) rest();
+    }).observe(section, { attributes: true, attributeFilter: ['data-settled'] });
   }
 </script>
 
