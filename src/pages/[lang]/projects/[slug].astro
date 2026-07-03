@@ -250,6 +250,13 @@ const jsonLd = [
     height: auto;
     border-radius: var(--radius-l);
     border: 1px solid var(--hairline);
+    filter: grayscale(1);
+    transition: filter var(--dur-slow, 0.45s) var(--ease-out-quart);
+  }
+  /* Colour in when hovered (desktop) or scrolled into the active zone. */
+  .case__cover:hover .case__cover-img,
+  .case__cover.is-active .case__cover-img {
+    filter: grayscale(0);
   }
 
   .case__body {
@@ -338,3 +345,21 @@ const jsonLd = [
     }
   }
 </style>
+
+<script>
+  // Colour the hero once it's substantially in view (scroll trigger), the
+  // touch-friendly counterpart to the hover colourisation.
+  const cover = document.querySelector('.case__cover');
+  if (cover && 'IntersectionObserver' in window) {
+    // Trigger when the cover overlaps the central band of the viewport. Using a
+    // negative rootMargin (not intersectionRatio) works even when the hero is
+    // taller than the viewport, where the ratio could never reach a threshold.
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) cover.classList.toggle('is-active', e.isIntersecting);
+      },
+      { rootMargin: '-30% 0px -30% 0px', threshold: 0 },
+    );
+    io.observe(cover);
+  }
+</script>
