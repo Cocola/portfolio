@@ -36,11 +36,12 @@ const previews = items.filter((p) => p.hero);
           data-project={p.id}
           src={p.hero!}
           alt=""
-          widths={[900, 1400, 2000]}
+          widths={[720, 1200]}
           sizes="100vw"
           format="webp"
-          quality={66}
+          quality={58}
           loading="lazy"
+          decoding="async"
         />
       ))
     }
@@ -84,7 +85,7 @@ const previews = items.filter((p) => p.hero);
     transform: perspective(1400px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
       scale(1.08) translate3d(var(--px, 0px), var(--py, 0px), 0);
     transform-origin: center;
-    will-change: transform, opacity;
+    will-change: transform;
   }
   .work__bg-img {
     position: absolute;
@@ -233,6 +234,15 @@ const previews = items.filter((p) => p.hero);
   const list = section?.querySelector<HTMLElement>('.work__list');
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Pre-decode the backdrops while idle so arriving at the Projects station
+  // never stalls the frame on first image decode.
+  if (bg && motionOk) {
+    const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1200));
+    idle(() => {
+      for (const el of bg.querySelectorAll('img')) el.decode?.().catch(() => {});
+    });
+  }
 
   if (section && bg && list && fine && motionOk) {
     const imgs = new Map<string, HTMLElement>();
