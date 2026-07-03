@@ -221,22 +221,23 @@ h2.mono-label {
   /* Leaving page: fade out while receding (we descend past it). Clears a touch
      faster than the arrival so the two snapshots don't muddy each other. */
   ::view-transition-old(root) {
-    animation: nf-page-out 440ms var(--ease-out-quart) both;
+    animation: nf-page-out 380ms var(--ease-out-quart) both;
   }
-  /* Arriving page: fade in rising up into place, slightly delayed. */
+  /* Arriving page: rises up into place with a clear lift — the pages share a
+     tone, so motion (not the crossfade) is what makes the transition read. */
   ::view-transition-new(root) {
-    animation: nf-page-in var(--dur-slow, 0.62s) var(--ease-out-quart) 60ms both;
+    animation: nf-page-in 640ms var(--ease-out-quart) 80ms both;
   }
   @keyframes nf-page-out {
     to {
       opacity: 0;
-      transform: scale(0.99) translateY(-10px);
+      transform: scale(0.97) translateY(-24px);
     }
   }
   @keyframes nf-page-in {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(48px) scale(0.99);
     }
   }
 }

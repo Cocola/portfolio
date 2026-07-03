@@ -662,6 +662,23 @@ const { nav = [] } = Astro.props;
         });
       });
 
+      // In-page anchors (hero CTAs, header nav) can't use native anchor
+      // scrolling while the stage is pinned — route them to their station's
+      // altitude instead. Non-dolly falls back to plain anchor scrolling.
+      const idToIndex = new Map<string, number>();
+      sections.forEach((s, i) => {
+        if (s.id) idToIndex.set(s.id, i);
+      });
+      for (const link of document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')) {
+        const id = link.getAttribute('href')?.slice(1);
+        if (!id || !idToIndex.has(id)) continue;
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const p = tickProgress(idToIndex.get(id)!);
+          lenis.scrollTo(st.start + p * (st.end - st.start), { duration: 1.1 });
+        });
+      }
+
       window.addEventListener('load', () => ScrollTrigger.refresh());
     } else if (descent && sections.length > 1) {
       // Small screen: soft depth reveal (no pin).

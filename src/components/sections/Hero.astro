@@ -8,8 +8,6 @@ interface Props {
 }
 const { locale } = Astro.props;
 const t = useTranslations(locale);
-const cvHref =
-  locale === 'fr-fr' ? '/cv/nicolas-fiascaro-fr.pdf' : '/cv/nicolas-fiascaro-en.pdf';
 const fr = locale === 'fr-fr';
 ---
 
@@ -33,8 +31,8 @@ const fr = locale === 'fr-fr';
   </h1>
 
   <div class="hero__actions">
-    <Button href="#work" variant="primary">{t('hero.viewWork')}</Button>
-    <Button href={cvHref} variant="secondary" download>{t('hero.cv')}</Button>
+    <Button href="#contact" variant="primary">{t('hero.contact')}</Button>
+    <Button href="#work" variant="secondary">{t('hero.viewWork')}</Button>
   </div>
 </Section>
 
