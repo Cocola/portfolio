@@ -327,16 +327,3 @@ const previews = items.filter((p) => p.hero);
     }).observe(section, { attributes: true, attributeFilter: ['data-settled'] });
   }
 </script>
-
-<script>
-  // Shared-element view transition: tag the clicked project's title so it
-  // morphs into the case-study title (`view-transition-name: nf-hero`).
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    for (const link of document.querySelectorAll<HTMLAnchorElement>('.project__link')) {
-      link.addEventListener('click', () => {
-        const title = link.querySelector<HTMLElement>('.project__title');
-        if (title) title.style.viewTransitionName = 'nf-hero';
-      });
-    }
-  }
-</script>

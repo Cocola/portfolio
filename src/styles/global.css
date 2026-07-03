@@ -218,24 +218,25 @@ h2.mono-label {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Leaving page: fade out with a subtle recede (we're descending). */
+  /* Leaving page: fade out while receding (we descend past it). Clears a touch
+     faster than the arrival so the two snapshots don't muddy each other. */
   ::view-transition-old(root) {
-    animation: nf-page-out var(--dur-base) var(--ease-out-quart) both;
+    animation: nf-page-out 440ms var(--ease-out-quart) both;
   }
-  /* Arriving page: fade in rising up into place. */
+  /* Arriving page: fade in rising up into place, slightly delayed. */
   ::view-transition-new(root) {
-    animation: nf-page-in var(--dur-slow, 0.45s) var(--ease-out-quart) both;
+    animation: nf-page-in var(--dur-slow, 0.62s) var(--ease-out-quart) 60ms both;
   }
   @keyframes nf-page-out {
     to {
       opacity: 0;
-      transform: scale(0.985);
+      transform: scale(0.99) translateY(-10px);
     }
   }
   @keyframes nf-page-in {
     from {
       opacity: 0;
-      transform: translateY(14px);
+      transform: translateY(20px);
     }
   }
 }
