@@ -363,16 +363,22 @@ const jsonLd = [
 <script>
   // Colour the hero once it's substantially in view (scroll trigger), the
   // touch-friendly counterpart to the hover colourisation.
-  const cover = document.querySelector('.case__cover');
+  const cover = document.querySelector<HTMLElement>('.case__cover');
   if (cover && 'IntersectionObserver' in window) {
-    // Trigger when the cover overlaps the central band of the viewport. Using a
-    // negative rootMargin (not intersectionRatio) works even when the hero is
-    // taller than the viewport, where the ratio could never reach a threshold.
+    // Colour the cover once the WHOLE image sits within the viewport (fully
+    // visible), and revert to grayscale as soon as it's clipped by an edge.
+    // Landscape covers fit vertically, so intersectionRatio reaches ~1; if a
+    // cover is ever taller than the viewport (ratio can't reach 1), fall back
+    // to "as visible as it can get".
+    const fits = () => cover.getBoundingClientRect().height <= window.innerHeight;
     const io = new IntersectionObserver(
       (entries) => {
-        for (const e of entries) cover.classList.toggle('is-active', e.isIntersecting);
+        for (const e of entries) {
+          const full = fits() ? e.intersectionRatio >= 0.99 : e.intersectionRatio >= 0.9;
+          cover.classList.toggle('is-active', full);
+        }
       },
-      { rootMargin: '-30% 0px -30% 0px', threshold: 0 },
+      { threshold: [0, 0.25, 0.5, 0.75, 0.9, 0.99, 1] },
     );
     io.observe(cover);
   }

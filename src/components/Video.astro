@@ -10,12 +10,19 @@ interface Props {
   wide?: boolean;
 }
 const { src, width, height, caption, wide = false } = Astro.props;
+
+// A still first-frame poster keeps the box from rendering as a blank rectangle
+// before the clip enters view and autoplays. Generated under /videos/posters/.
+const poster = src
+  .replace('/videos/', '/videos/posters/')
+  .replace(/\.mp4$/, '.jpg');
 ---
 
 <figure class:list={['case-video', { 'case-video--wide': wide }]}>
   <video
     class="case-video__el"
     src={src}
+    poster={poster}
     width={width}
     height={height}
     style={`aspect-ratio: ${width} / ${height};`}
@@ -46,6 +53,18 @@ const { src, width, height, caption, wide = false } = Astro.props;
     border-radius: var(--radius-m);
     border: 1px solid var(--hairline);
     background: var(--surface, #0e0e0e);
+    /* Same media language as the case covers: grayscale at rest, colour on
+       play (poster grays too, so the reveal reads as intentional). */
+    filter: grayscale(1);
+    transition: filter var(--dur-slow) var(--ease-out-quart);
+  }
+  .case-video__el.is-playing {
+    filter: grayscale(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .case-video__el {
+      transition: none;
+    }
   }
   .case-video__caption {
     margin-top: var(--space-2xs);
@@ -61,6 +80,14 @@ const { src, width, height, caption, wide = false } = Astro.props;
   // so nothing moves until the user chooses to play.
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clips = document.querySelectorAll<HTMLVideoElement>('video[data-showcase]');
+
+  // Colour <-> grayscale follows the actual playing state (works for both the
+  // autoplay path and a manual play under reduced motion).
+  for (const v of clips) {
+    v.addEventListener('play', () => v.classList.add('is-playing'));
+    v.addEventListener('pause', () => v.classList.remove('is-playing'));
+  }
+
   if (!reduce && 'IntersectionObserver' in window) {
     const io = new IntersectionObserver(
       (entries) => {
