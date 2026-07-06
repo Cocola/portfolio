@@ -81,10 +81,10 @@
   --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.94rem);
   --step-0: clamp(1rem, 0.96rem + 0.18vw, 1.15rem);
   --step-1: clamp(1.13rem, 0.94rem + 0.85vw, 1.6rem);
-  --step-2: clamp(1.3rem, 0.91rem + 1.73vw, 2.25rem);
-  --step-3: clamp(1.55rem, 0.9rem + 2.91vw, 3.15rem);
-  --step-4: clamp(1.85rem, 0.81rem + 4.64vw, 4.4rem);
-  --step-5: clamp(2.2rem, 0.65rem + 6.91vw, 6rem);
+  --step-2: clamp(1.15rem, 0.65rem + 2.07vw, 2.25rem);
+  --step-3: clamp(1.4rem, 0.72rem + 3.03vw, 3.15rem);
+  --step-4: clamp(1.55rem, 0.42rem + 5.05vw, 4.4rem);
+  --step-5: clamp(1.6rem, -0.2rem + 8vw, 6rem);
 
   /* Weights. The display antiqua is set in Light (elegance comes from
      scale and framing, not weight). */

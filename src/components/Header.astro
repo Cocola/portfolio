@@ -152,6 +152,11 @@ const home = `/${locale}/`;
     .site-header__name {
       display: none;
     }
+    /* Section links crowd the bar on phones; the scroll and the hero CTAs
+       already cover navigation. Keep only logo + theme + language. */
+    .site-header__links {
+      display: none;
+    }
     .site-header__nav {
       gap: var(--space-s);
       font-size: var(--step--1);
