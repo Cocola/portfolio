@@ -67,8 +67,9 @@ const home = localizedPath(locale, '/');
         href={switchHref}
         hreflang={htmlLang[other]}
         lang={htmlLang[other]}
+        aria-label={t('lang.switch')}
       >
-        {t('lang.switch')}
+        {other.toUpperCase()}
       </a>
     </nav>
   </div>
@@ -121,11 +122,10 @@ const home = localizedPath(locale, '/');
   .site-header__nav a:not(.site-header__lang):hover {
     text-decoration: underline;
   }
+  /* Discreet: just the other locale's code (EN / FR), no pill. */
   .site-header__lang {
-    padding: 0.35em 0.85em;
-    border: 1px solid currentColor;
-    border-radius: var(--radius-pill);
-    opacity: 0.85;
+    opacity: 0.65;
+    transition: opacity var(--dur-fast) var(--ease-out-quart);
   }
   .site-header__lang:hover {
     opacity: 1;
