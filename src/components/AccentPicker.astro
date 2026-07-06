@@ -19,7 +19,7 @@ const accents = [
 const label = fr ? 'Couleur d’accent' : 'Accent colour';
 ---
 
-<div class="accent" data-accent-picker>
+<div class="accent" data-accent-picker data-open="false">
   <button
     class="accent__toggle"
     type="button"
@@ -31,7 +31,7 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
     <span class="accent__dot accent__dot--current" aria-hidden="true"></span>
   </button>
 
-  <div class="accent__menu" role="menu" aria-label={label} hidden>
+  <div class="accent__menu" role="menu" aria-label={label}>
     {
       accents.map((a) => (
         <button
@@ -42,8 +42,9 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
           data-accent-value={a.key}
           title={a.label}
           aria-label={a.label}
+          style={`--sw:${a.swatch}`}
         >
-          <span class="accent__dot" aria-hidden="true" style={`background:${a.swatch}`} />
+          <span class="accent__dot" aria-hidden="true" />
         </button>
       ))
     }
@@ -51,9 +52,12 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
 </div>
 
 <style>
+  /* Collapsed footprint = one dot; the pill expands horizontally over it. */
   .accent {
     position: relative;
     display: inline-flex;
+    inline-size: 22px;
+    block-size: 22px;
   }
   .accent__toggle,
   .accent__opt {
@@ -64,62 +68,116 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
     color: inherit;
     cursor: pointer;
   }
+
+  /* Collapsed trigger: the current accent as a single clean dot (no border). */
   .accent__toggle {
-    inline-size: 24px;
-    block-size: 24px;
-    opacity: 0.85;
-    transition: opacity var(--dur-fast) var(--ease-out-quart);
+    position: absolute;
+    inset: 0;
+    transition:
+      opacity var(--dur-fast) var(--ease-out-quart),
+      transform var(--dur-fast) var(--ease-out-quart);
   }
   .accent__toggle:hover {
-    opacity: 1;
+    transform: scale(1.1);
   }
+  .accent[data-open='true'] .accent__toggle {
+    opacity: 0;
+    transform: scale(0.6);
+    pointer-events: none;
+  }
+
   .accent__dot {
-    inline-size: 15px;
-    block-size: 15px;
+    inline-size: 16px;
+    block-size: 16px;
     border-radius: var(--radius-pill);
-    background: var(--accent);
-    box-shadow: 0 0 0 1px color-mix(in oklch, var(--ink) 22%, transparent);
-    transition: transform var(--dur-fast) var(--ease-out-quart);
+    background: var(--sw, var(--accent));
   }
   .accent__dot--current {
     background: var(--accent);
   }
 
-  /* Popover: a small row of colour dots under the toggle. */
+  /* Pill: expands in place over the toggle, growing rightward. */
   .accent__menu {
     position: absolute;
-    inset-block-start: calc(100% + var(--space-2xs));
-    inset-inline-end: 0;
-    z-index: var(--z-nav);
+    inset-block-start: 50%;
+    inset-inline-start: -5px;
+    z-index: 3;
     display: flex;
-    gap: var(--space-2xs);
-    padding: var(--space-2xs);
+    gap: 7px;
+    padding: 5px;
     background: var(--surface);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius-pill);
-    box-shadow: 0 8px 24px -12px color-mix(in oklch, var(--ink) 45%, transparent);
+    box-shadow: 0 10px 30px -14px color-mix(in oklch, var(--ink) 50%, transparent);
+    /* closed */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-50%) scale(0.82);
+    transform-origin: left center;
+    transition:
+      opacity var(--dur-base) var(--ease-out-quart),
+      transform var(--dur-base) var(--ease-out-expo),
+      visibility 0s linear var(--dur-base);
   }
-  .accent__menu[hidden] {
-    display: none;
+  .accent[data-open='true'] .accent__menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) scale(1);
+    transition:
+      opacity var(--dur-base) var(--ease-out-quart),
+      transform var(--dur-base) var(--ease-out-expo),
+      visibility 0s;
   }
+
   .accent__opt {
-    inline-size: 26px;
-    block-size: 26px;
+    inline-size: 20px;
+    block-size: 20px;
     border-radius: var(--radius-pill);
+    /* staggered entrance */
+    opacity: 0;
+    transform: scale(0.3);
+    transition:
+      opacity var(--dur-base) var(--ease-out-quart),
+      transform var(--dur-base) var(--ease-out-expo);
   }
+  .accent__opt .accent__dot {
+    transition: transform var(--dur-fast) var(--ease-out-quart);
+  }
+  .accent[data-open='true'] .accent__opt {
+    opacity: 1;
+    transform: none;
+  }
+  /* Reveal left -> right so the pill reads as growing out of the toggle. */
+  .accent[data-open='true'] .accent__opt:nth-child(1) {
+    transition-delay: 0.02s;
+  }
+  .accent[data-open='true'] .accent__opt:nth-child(2) {
+    transition-delay: 0.05s;
+  }
+  .accent[data-open='true'] .accent__opt:nth-child(3) {
+    transition-delay: 0.08s;
+  }
+  .accent[data-open='true'] .accent__opt:nth-child(4) {
+    transition-delay: 0.11s;
+  }
+
   .accent__opt:hover .accent__dot {
-    transform: scale(1.18);
+    transform: scale(1.14);
   }
-  /* Selected option: a ring around its dot. */
+  /* Selected: bigger + a halo in the dot's OWN colour (no grey border). */
   .accent__opt[aria-checked='true'] .accent__dot {
+    transform: scale(1.16);
     box-shadow:
       0 0 0 2px var(--surface),
-      0 0 0 3.5px currentColor;
+      0 0 0 3.5px var(--sw);
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .accent__toggle,
+    .accent__menu,
+    .accent__opt,
     .accent__dot {
-      transition: none;
+      transition-duration: 0.01ms !important;
+      transition-delay: 0s !important;
     }
   }
 </style>
@@ -130,13 +188,13 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
   const picker = document.querySelector<HTMLElement>('[data-accent-picker]');
   if (picker) {
     const toggle = picker.querySelector<HTMLButtonElement>('.accent__toggle')!;
-    const menu = picker.querySelector<HTMLElement>('.accent__menu')!;
     const opts = Array.from(
       picker.querySelectorAll<HTMLButtonElement>('[data-accent-value]'),
     );
 
+    const isOpen = () => picker.dataset.open === 'true';
     const setOpen = (open: boolean) => {
-      menu.hidden = !open;
+      picker.dataset.open = String(open);
       toggle.setAttribute('aria-expanded', String(open));
     };
 
@@ -165,7 +223,7 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
     } catch {}
     markChecked(current);
 
-    toggle.addEventListener('click', () => setOpen(menu.hidden));
+    toggle.addEventListener('click', () => setOpen(!isOpen()));
     for (const o of opts) {
       o.addEventListener('click', () => {
         apply(o.dataset.accentValue!, true);
