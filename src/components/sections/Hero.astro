@@ -1,6 +1,5 @@
 ---
 import Section from '../Section.astro';
-import Button from '../Button.astro';
 import { useTranslations, type Locale } from '../../i18n/ui';
 
 interface Props {
@@ -30,10 +29,13 @@ const fr = locale === 'fr';
     }
   </h1>
 
-  <div class="hero__actions">
-    <Button href="#contact" variant="primary">{t('hero.contact')}</Button>
-    <Button href="#work" variant="secondary">{t('hero.viewWork')}</Button>
-  </div>
+  <a class="hero__scroll" href="#skills">
+    <span class="sr-only">{fr ? 'Descendre à la section suivante' : 'Scroll to the next section'}</span>
+    <svg class="hero__scroll-arrow" width="20" height="38" viewBox="0 0 20 38" fill="none" aria-hidden="true">
+      <path d="M10 2 V31" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      <path d="M3 24 L10 32 L17 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </a>
 </Section>
 
 <style>
@@ -61,10 +63,37 @@ const fr = locale === 'fr';
     color: var(--ink-muted);
     font-weight: var(--weight-regular);
   }
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-s);
-    margin-top: var(--space-s);
+  /* Scroll cue: an invitation to descend (coherent with the free-fall
+     concept), a real anchor to the next section. */
+  .hero__scroll {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 44px;
+    block-size: 44px;
+    margin-top: var(--space-l);
+    color: var(--ink-muted);
+    transition: color var(--dur-fast) var(--ease-out-quart);
+  }
+  .hero__scroll:hover {
+    color: var(--ink);
+  }
+  .hero__scroll-arrow {
+    display: block;
+    animation: hero-bob 1.9s var(--ease-in-out, ease-in-out) infinite;
+  }
+  @keyframes hero-bob {
+    0%,
+    100% {
+      transform: translateY(-3px);
+    }
+    50% {
+      transform: translateY(3px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__scroll-arrow {
+      animation: none;
+    }
   }
 </style>
