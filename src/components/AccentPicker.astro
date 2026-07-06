@@ -1,0 +1,184 @@
+---
+import { type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const fr = locale === 'fr';
+
+// Curated accents. `key` drives the [data-accent] token override in tokens.css
+// (bordeaux = default, no attribute). `swatch` is the dot colour shown in the
+// picker (a mid, saturated take that reads in both themes).
+const accents = [
+  { key: 'bordeaux', label: fr ? 'Bordeaux' : 'Bordeaux', swatch: 'oklch(0.5 0.15 25)' },
+  { key: 'emeraude', label: fr ? 'Émeraude' : 'Emerald', swatch: 'oklch(0.52 0.12 162)' },
+  { key: 'ambre', label: fr ? 'Ambre' : 'Amber', swatch: 'oklch(0.7 0.13 80)' },
+  { key: 'cobalt', label: fr ? 'Cobalt' : 'Cobalt', swatch: 'oklch(0.52 0.16 255)' },
+];
+const label = fr ? 'Couleur d’accent' : 'Accent colour';
+---
+
+<div class="accent" data-accent-picker>
+  <button
+    class="accent__toggle"
+    type="button"
+    aria-haspopup="true"
+    aria-expanded="false"
+    aria-label={label}
+    title={label}
+  >
+    <span class="accent__dot accent__dot--current" aria-hidden="true"></span>
+  </button>
+
+  <div class="accent__menu" role="menu" aria-label={label} hidden>
+    {
+      accents.map((a) => (
+        <button
+          class="accent__opt"
+          type="button"
+          role="menuitemradio"
+          aria-checked={a.key === 'bordeaux' ? 'true' : 'false'}
+          data-accent-value={a.key}
+          title={a.label}
+          aria-label={a.label}
+        >
+          <span class="accent__dot" aria-hidden="true" style={`background:${a.swatch}`} />
+        </button>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .accent {
+    position: relative;
+    display: inline-flex;
+  }
+  .accent__toggle,
+  .accent__opt {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+  }
+  .accent__toggle {
+    inline-size: 24px;
+    block-size: 24px;
+    opacity: 0.85;
+    transition: opacity var(--dur-fast) var(--ease-out-quart);
+  }
+  .accent__toggle:hover {
+    opacity: 1;
+  }
+  .accent__dot {
+    inline-size: 15px;
+    block-size: 15px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    box-shadow: 0 0 0 1px color-mix(in oklch, var(--ink) 22%, transparent);
+    transition: transform var(--dur-fast) var(--ease-out-quart);
+  }
+  .accent__dot--current {
+    background: var(--accent);
+  }
+
+  /* Popover: a small row of colour dots under the toggle. */
+  .accent__menu {
+    position: absolute;
+    inset-block-start: calc(100% + var(--space-2xs));
+    inset-inline-end: 0;
+    z-index: var(--z-nav);
+    display: flex;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs);
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 8px 24px -12px color-mix(in oklch, var(--ink) 45%, transparent);
+  }
+  .accent__menu[hidden] {
+    display: none;
+  }
+  .accent__opt {
+    inline-size: 26px;
+    block-size: 26px;
+    border-radius: var(--radius-pill);
+  }
+  .accent__opt:hover .accent__dot {
+    transform: scale(1.18);
+  }
+  /* Selected option: a ring around its dot. */
+  .accent__opt[aria-checked='true'] .accent__dot {
+    box-shadow:
+      0 0 0 2px var(--surface),
+      0 0 0 3.5px currentColor;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .accent__dot {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const KEY = 'nf-accent';
+  const root = document.documentElement;
+  const picker = document.querySelector<HTMLElement>('[data-accent-picker]');
+  if (picker) {
+    const toggle = picker.querySelector<HTMLButtonElement>('.accent__toggle')!;
+    const menu = picker.querySelector<HTMLElement>('.accent__menu')!;
+    const opts = Array.from(
+      picker.querySelectorAll<HTMLButtonElement>('[data-accent-value]'),
+    );
+
+    const setOpen = (open: boolean) => {
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+    };
+
+    const markChecked = (value: string) => {
+      for (const o of opts) {
+        o.setAttribute('aria-checked', String(o.dataset.accentValue === value));
+      }
+    };
+
+    const apply = (value: string, persist: boolean) => {
+      // Bordeaux is the default: no attribute needed.
+      if (value === 'bordeaux') root.removeAttribute('data-accent');
+      else root.dataset.accent = value;
+      markChecked(value);
+      if (persist) {
+        try {
+          localStorage.setItem(KEY, value);
+        } catch {}
+      }
+    };
+
+    // Reflect the persisted choice (already applied pre-paint by BaseLayout).
+    let current = 'bordeaux';
+    try {
+      current = localStorage.getItem(KEY) || 'bordeaux';
+    } catch {}
+    markChecked(current);
+
+    toggle.addEventListener('click', () => setOpen(menu.hidden));
+    for (const o of opts) {
+      o.addEventListener('click', () => {
+        apply(o.dataset.accentValue!, true);
+        setOpen(false);
+      });
+    }
+
+    // Dismiss on outside click / Escape.
+    document.addEventListener('click', (e) => {
+      if (!picker.contains(e.target as Node)) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+  }
+</script>

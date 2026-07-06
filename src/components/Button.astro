@@ -55,15 +55,16 @@ const target = external ? '_blank' : undefined;
     transform: translateY(0);
   }
 
-  /* Full monochrome. Hover = fill <-> outline inversion. */
+  /* Monochrome at rest; the accent (bordeaux) surfaces on hover. */
   .btn--primary {
     background-color: var(--ink);
     color: var(--on-ink);
     box-shadow: inset 0 0 0 1.5px var(--ink);
   }
   .btn--primary:hover {
-    background-color: transparent;
-    color: var(--ink);
+    background-color: var(--accent-solid);
+    color: var(--accent-ink);
+    box-shadow: inset 0 0 0 1.5px var(--accent-solid);
   }
 
   .btn--secondary {
@@ -72,8 +73,9 @@ const target = external ? '_blank' : undefined;
     border: 1.5px solid currentColor;
   }
   .btn--secondary:hover {
-    background-color: var(--ink);
-    color: var(--on-ink);
+    background-color: var(--accent-solid);
+    border-color: var(--accent-solid);
+    color: var(--accent-ink);
   }
 
   @media (prefers-reduced-motion: reduce) {

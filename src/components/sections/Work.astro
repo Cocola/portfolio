@@ -158,13 +158,16 @@ const previews = items.filter((p) => p.hero);
   }
   .project__num {
     color: var(--ink-muted);
+    transition: color var(--dur-base) var(--ease-out-quart);
   }
   .project__title {
     font-size: var(--step-3);
     font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight);
     text-wrap: balance;
-    transition: transform var(--dur-base) var(--ease-out-quart);
+    transition:
+      transform var(--dur-base) var(--ease-out-quart),
+      color var(--dur-base) var(--ease-out-quart);
   }
   .project__meta {
     display: flex;
@@ -191,6 +194,10 @@ const previews = items.filter((p) => p.hero);
     }
     .project__link:hover .project__title {
       transform: translateX(0.5rem);
+      color: var(--accent);
+    }
+    .project__link:hover .project__num {
+      color: var(--accent);
     }
   }
 

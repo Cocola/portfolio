@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import AccentPicker from './AccentPicker.astro';
 import {
   useTranslations,
   otherLocale,
@@ -62,6 +63,7 @@ const home = localizedPath(locale, '/');
           <path d="M9 1.5 A7.5 7.5 0 0 1 9 16.5 Z" fill="currentColor" />
         </svg>
       </button>
+      <AccentPicker {locale} />
       <a
         class="site-header__lang mono-label"
         href={switchHref}

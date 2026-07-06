@@ -18,12 +18,12 @@ const fr = locale === 'fr';
       fr ? (
         <>
           Je <em>conçois</em> et <em>développe</em> la couche produit,
-          <span class="hero__dim"> du design system à l’interface.</span>
+          <span class="hero__accent"> du design system à l’interface.</span>
         </>
       ) : (
         <>
           I <em>design</em> and <em>build</em> the product layer,
-          <span class="hero__dim"> from design system to interface.</span>
+          <span class="hero__accent"> from design system to interface.</span>
         </>
       )
     }
@@ -59,9 +59,16 @@ const fr = locale === 'fr';
     font-style: normal;
     font-weight: var(--weight-semibold);
   }
-  .hero__dim {
-    color: var(--ink-muted);
+  /* Signature payoff: the sole accent moment of the hero. Only in light mode,
+     where the near-white cloud makes the deep accent sing. In dark mode the
+     hero sits on a MID-grey cloud (not charcoal), where a saturated accent
+     reads weak — so we fall back to the elegant muted treatment there. */
+  .hero__accent {
+    color: var(--accent);
     font-weight: var(--weight-regular);
+  }
+  :global(html[data-theme='dark']) .hero__accent {
+    color: var(--ink-muted);
   }
   /* Scroll cue: an invitation to descend (coherent with the free-fall
      concept), a real anchor to the next section. */
@@ -76,7 +83,7 @@ const fr = locale === 'fr';
     transition: color var(--dur-fast) var(--ease-out-quart);
   }
   .hero__scroll:hover {
-    color: var(--ink);
+    color: var(--accent);
   }
   .hero__scroll-arrow {
     display: block;

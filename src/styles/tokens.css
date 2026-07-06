@@ -62,6 +62,17 @@
   --surface: var(--surface-on-light);
   --hairline: var(--hairline-on-light);
 
+  /* --- Accent: the single brand color, a deep wine red (bordeaux) ---
+     The lone exception to the B&W system. Rationed: selective emphasis +
+     interactive (CTA / link) hover only. Themed for legibility on --page:
+     deep on paper, lightened on charcoal.
+     --accent      : emphasis text + hover ink/icon color (on --page)
+     --accent-solid: fill for CTA hovers (paired with --accent-ink text)
+     --accent-ink  : near-white text placed on an --accent-solid fill */
+  --accent: oklch(0.46 0.145 25);
+  --accent-solid: oklch(0.44 0.145 25);
+  --accent-ink: oklch(0.968 0.008 80);
+
   /* --- Typography: contrast of REGISTER (not weight) ---
      Titles = contemporary antiqua, roman, Light, huge (the human,
      the editorial). Body = a chosen neutral grotesque (the machine). Mono =
@@ -152,6 +163,11 @@
   --ink-muted: var(--ink-muted-light);
   --surface: var(--surface-on-dark);
   --hairline: var(--hairline-on-dark);
+  /* Lightened bordeaux so it pops on charcoal; fill stays deep enough
+     to keep --accent-ink legible. */
+  --accent: oklch(0.60 0.155 23);
+  --accent-solid: oklch(0.47 0.15 26);
+  --accent-ink: oklch(0.98 0.006 80);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
@@ -161,5 +177,49 @@
     --ink-muted: var(--ink-muted-light);
     --surface: var(--surface-on-dark);
     --hairline: var(--hairline-on-dark);
+    --accent: oklch(0.60 0.155 23);
+    --accent-solid: oklch(0.47 0.15 26);
+    --accent-ink: oklch(0.98 0.006 80);
   }
+}
+
+/* =====================================================================
+   Selectable accents (the header "theme-color" picker). Bordeaux is the
+   default (defined above). Each alternative overrides the 3 accent tokens,
+   with a dark variant so it stays legible on charcoal. --accent (text) is
+   tuned per theme for contrast on --page; --accent-solid (CTA fills) stays
+   deep so --accent-ink (near-white) always reads on it. The inline pre-paint
+   script sets data-accent from localStorage to avoid a flash.
+   ===================================================================== */
+:root[data-accent='emeraude'] {
+  --accent: oklch(0.5 0.11 162);
+  --accent-solid: oklch(0.48 0.11 162);
+  --accent-ink: oklch(0.98 0.02 160);
+}
+:root[data-accent='emeraude'][data-theme='dark'] {
+  --accent: oklch(0.72 0.13 165);
+  --accent-solid: oklch(0.5 0.12 163);
+  --accent-ink: oklch(0.98 0.02 160);
+}
+
+:root[data-accent='ambre'] {
+  --accent: oklch(0.56 0.12 72);
+  --accent-solid: oklch(0.52 0.11 70);
+  --accent-ink: oklch(0.99 0.01 85);
+}
+:root[data-accent='ambre'][data-theme='dark'] {
+  --accent: oklch(0.82 0.13 85);
+  --accent-solid: oklch(0.55 0.12 72);
+  --accent-ink: oklch(0.99 0.01 85);
+}
+
+:root[data-accent='cobalt'] {
+  --accent: oklch(0.5 0.16 255);
+  --accent-solid: oklch(0.48 0.16 255);
+  --accent-ink: oklch(0.98 0.01 250);
+}
+:root[data-accent='cobalt'][data-theme='dark'] {
+  --accent: oklch(0.72 0.14 250);
+  --accent-solid: oklch(0.52 0.17 255);
+  --accent-ink: oklch(0.98 0.01 250);
 }
