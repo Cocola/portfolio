@@ -1,20 +1,27 @@
 /* =====================================================================
    i18n — interface strings + helpers
-   Locales aligned with the existing ones (/fr-fr, /en-us) for SEO continuity.
+   Language-only locales. French is the default and served at the root (`/`);
+   English lives under `/en/`.
    ===================================================================== */
 
-export const locales = ['fr-fr', 'en-us'] as const;
+export const locales = ['fr', 'en'] as const;
 export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = 'fr-fr';
+export const defaultLocale: Locale = 'fr';
 
 /** HTML language code (`lang` / `hreflang`) for each locale. */
 export const htmlLang: Record<Locale, string> = {
-  'fr-fr': 'fr-FR',
-  'en-us': 'en-US',
+  fr: 'fr',
+  en: 'en',
+};
+
+/** Open Graph locale (language_TERRITORY). */
+export const ogLocale: Record<Locale, string> = {
+  fr: 'fr_FR',
+  en: 'en_US',
 };
 
 export const ui = {
-  'fr-fr': {
+  fr: {
     'nav.work': 'Projets',
     'nav.about': 'À propos',
     'nav.contact': 'Contact',
@@ -37,7 +44,7 @@ export const ui = {
     'footer.builtWith': 'Conçu et développé par mes soins, avec Astro.',
     'lang.switch': 'English',
   },
-  'en-us': {
+  en: {
     'nav.work': 'Work',
     'nav.about': 'About',
     'nav.contact': 'Contact',
@@ -62,7 +69,7 @@ export const ui = {
   },
 } as const;
 
-export type UiKey = keyof (typeof ui)['fr-fr'];
+export type UiKey = keyof (typeof ui)['fr'];
 
 /** Returns a translation function for a given locale. */
 export function useTranslations(locale: Locale) {
@@ -71,15 +78,30 @@ export function useTranslations(locale: Locale) {
   };
 }
 
-/** Extracts the locale from a pathname (`/fr-fr/...`). */
+/**
+ * Build a site-absolute URL for a locale. The default locale is prefix-free
+ * (served at the root); other locales are prefixed (`/en/...`).
+ */
+export function localizedPath(locale: Locale, path = '/'): string {
+  const clean = path.startsWith('/') ? path : `/${path}`;
+  if (locale === defaultLocale) return clean;
+  return clean === '/' ? `/${locale}/` : `/${locale}${clean}`;
+}
+
+/** Extracts the locale from a pathname (`/en/...` -> en, otherwise the default). */
 export function getLocaleFromPath(pathname: string): Locale {
   const seg = pathname.split('/').filter(Boolean)[0];
-  return (locales as readonly string[]).includes(seg)
-    ? (seg as Locale)
-    : defaultLocale;
+  return seg === 'en' ? 'en' : defaultLocale;
+}
+
+/** The path with the locale prefix stripped, always starting with `/`. */
+export function stripLocale(pathname: string): string {
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments[0] === 'en') segments.shift();
+  return segments.length ? `/${segments.join('/')}` : '/';
 }
 
 /** The opposite locale (for the language switcher). */
 export function otherLocale(locale: Locale): Locale {
-  return locale === 'fr-fr' ? 'en-us' : 'fr-fr';
+  return locale === 'fr' ? 'en' : 'fr';
 }

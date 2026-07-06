@@ -12,7 +12,7 @@ const caseStudies = defineCollection({
     z.object({
       /** Matches `Project.id` in data/projects.ts. */
       project: z.string(),
-      locale: z.enum(['fr-fr', 'en-us']),
+      locale: z.enum(['fr', 'en']),
       /** One-line outcome shown under the title (TL;DR). */
       lead: z.string(),
       role: z.string(),

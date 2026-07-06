@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../Header.astro';
+import Footer from '../Footer.astro';
+import Descent from '../Descent.astro';
+import Hero from '../sections/Hero.astro';
+import Skills from '../sections/Skills.astro';
+import Work from '../sections/Work.astro';
+import About from '../sections/About.astro';
+import Contact from '../sections/Contact.astro';
+import { useTranslations, type Locale } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const title = `Nicolas Fiascaro — ${t('hero.role')}`;
+const description = t('hero.tagline');
+const fr = locale === 'fr';
+
+// Labels for the anchor nav (altimeter), in section order.
+const nav = [
+  { label: fr ? 'Accueil' : 'Home' },
+  { label: fr ? 'Savoir-faire' : 'Skills' },
+  { label: t('nav.work') },
+  { label: t('nav.about') },
+  { label: t('nav.contact') },
+];
+---
+
+<BaseLayout {title} {description} {locale}>
+  <Header slot="header" {locale} />
+  <Descent {nav}>
+    <Hero {locale} />
+    <Skills {locale} />
+    <Work {locale} />
+    <About {locale} />
+    <Contact {locale} />
+  </Descent>
+  <Footer slot="footer" {locale} />
+</BaseLayout>

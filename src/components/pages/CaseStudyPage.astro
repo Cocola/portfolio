@@ -1,31 +1,26 @@
 ---
 import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import Header from '../../../components/Header.astro';
-import Footer from '../../../components/Footer.astro';
-import { locales, useTranslations, type Locale } from '../../../i18n/ui';
-import { projects } from '../../../data/projects';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../Header.astro';
+import Footer from '../Footer.astro';
+import { localizedPath, useTranslations, type Locale } from '../../i18n/ui';
+import { projects } from '../../data/projects';
 
-export function getStaticPaths() {
-  return locales.flatMap((lang) =>
-    projects.map((p) => ({
-      params: { lang, slug: p.slug[lang] },
-      props: { id: p.id },
-    })),
-  );
+interface Props {
+  locale: Locale;
+  id: string;
 }
-
-const { lang } = Astro.params as { lang: Locale };
-const { id } = Astro.props as { id: string };
-const t = useTranslations(lang);
-const fr = lang === 'fr-fr';
+const { locale, id } = Astro.props;
+const t = useTranslations(locale);
+const fr = locale === 'fr';
+const lang = locale;
 
 const project = projects.find((p) => p.id === id)!;
 
 const studies = await getCollection(
   'caseStudies',
-  (e) => e.data.project === id && e.data.locale === lang,
+  (e) => e.data.project === id && e.data.locale === locale,
 );
 const study = studies[0];
 const Content = study ? (await render(study)).Content : null;
@@ -43,6 +38,15 @@ const disciplines = project.tags.map((tag) =>
 const title = `${project.title[lang]} — Nicolas Fiascaro`;
 const description = study?.data.lead ?? project.summary[lang];
 
+// The slug differs per locale, so each locale's bare path must be built from
+// the project data (not by naive path prefixing) for correct hreflang + switch.
+const other = locale === 'fr' ? 'en' : 'fr';
+const alternatePaths = {
+  fr: `/projects/${project.slug.fr}/`,
+  en: `/projects/${project.slug.en}/`,
+};
+const switchPath = `/projects/${project.slug[other]}/`;
+
 const jsonLd = [
   {
     '@context': 'https://schema.org',
@@ -58,8 +62,8 @@ const jsonLd = [
 ];
 ---
 
-<BaseLayout {title} {description} locale={lang} {jsonLd}>
-  <Header slot="header" locale={lang} variant="article" />
+<BaseLayout {title} {description} locale={lang} {jsonLd} {alternatePaths}>
+  <Header slot="header" locale={lang} variant="article" {switchPath} />
 
   <article class="case">
     <header class="case__hero container">
@@ -71,7 +75,7 @@ const jsonLd = [
         >
           <a
             class="case__pager-link mono-label"
-            href={`/${lang}/projects/${prev.slug[lang]}/`}
+            href={localizedPath(locale, `/projects/${prev.slug[locale]}/`)}
             title={prev.title[lang]}
           >
             ← {fr ? 'Précédent' : 'Previous'}
@@ -79,7 +83,7 @@ const jsonLd = [
           <span class="case__pager-sep" aria-hidden="true">/</span>
           <a
             class="case__pager-link mono-label"
-            href={`/${lang}/projects/${next.slug[lang]}/`}
+            href={localizedPath(locale, `/projects/${next.slug[locale]}/`)}
             title={next.title[lang]}
           >
             {fr ? 'Suivant' : 'Next'} →
@@ -159,11 +163,11 @@ const jsonLd = [
       class="case__foot container"
       aria-label={fr ? 'Projet précédent et suivant' : 'Previous and next project'}
     >
-      <a class="case__foot-link case__foot-link--prev" href={`/${lang}/projects/${prev.slug[lang]}/`}>
+      <a class="case__foot-link case__foot-link--prev" href={localizedPath(locale, `/projects/${prev.slug[locale]}/`)}>
         <span class="case__foot-dir mono-label">← {fr ? 'Précédent' : 'Previous'}</span>
         <span class="case__foot-title">{prev.title[lang]}</span>
       </a>
-      <a class="case__foot-link case__foot-link--next" href={`/${lang}/projects/${next.slug[lang]}/`}>
+      <a class="case__foot-link case__foot-link--next" href={localizedPath(locale, `/projects/${next.slug[locale]}/`)}>
         <span class="case__foot-dir mono-label">{fr ? 'Suivant' : 'Next'} →</span>
         <span class="case__foot-title">{next.title[lang]}</span>
       </a>

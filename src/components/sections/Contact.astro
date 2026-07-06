@@ -10,9 +10,9 @@ interface Props {
 }
 const { locale } = Astro.props;
 const t = useTranslations(locale);
-const fr = locale === 'fr-fr';
+const fr = locale === 'fr';
 const cvHref =
-  locale === 'fr-fr' ? '/cv/nicolas-fiascaro-fr.pdf' : '/cv/nicolas-fiascaro-en.pdf';
+  locale === 'fr' ? '/cv/nicolas-fiascaro-fr.pdf' : '/cv/nicolas-fiascaro-en.pdf';
 const alt = fr
   ? 'Vue aérienne du sol : Nicolas Fiascaro, longue ombre projetée sur un sol terracotta.'
   : 'Aerial view of the ground: Nicolas Fiascaro, long shadow cast on a terracotta floor.';

@@ -8,14 +8,13 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://www.nicolas-fiascaro.com',
 
-  // Preserves the existing URL structure (/fr-fr, /en-us) for SEO continuity.
-  // Only project slugs that change will be 301-redirected (see redirects).
+  // French is the default locale, served prefix-free at the root (`/`);
+  // English lives under `/en/`. Clean URLs, French-first for SEO.
   i18n: {
-    defaultLocale: 'fr-fr',
-    locales: ['fr-fr', 'en-us'],
+    defaultLocale: 'fr',
+    locales: ['fr', 'en'],
     routing: {
-      prefixDefaultLocale: true,
-      redirectToDefaultLocale: true,
+      prefixDefaultLocale: false,
     },
   },
 

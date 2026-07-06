@@ -3,7 +3,10 @@ import '../styles/global.css';
 import {
   locales,
   htmlLang,
+  ogLocale,
   defaultLocale,
+  localizedPath,
+  stripLocale,
   useTranslations,
   type Locale,
 } from '../i18n/ui';
@@ -18,6 +21,12 @@ interface Props {
   jsonLd?: Record<string, unknown>[];
   /** Disables indexing (utility pages). */
   noindex?: boolean;
+  /**
+   * Per-locale bare paths (without locale prefix) for the hreflang alternates.
+   * Needed when the slug differs across locales (e.g. case studies). Defaults
+   * to the current path for every locale.
+   */
+  alternatePaths?: Partial<Record<Locale, string>>;
 }
 
 const {
@@ -27,21 +36,21 @@ const {
   ogImage = '/og/default.png',
   jsonLd = [],
   noindex = false,
+  alternatePaths,
 } = Astro.props;
 
 const t = useTranslations(locale);
 const site = Astro.site ?? new URL('https://www.nicolas-fiascaro.com');
 
 // Page path without the locale prefix -> used for the hreflang alternates.
-const segments = Astro.url.pathname.split('/').filter(Boolean);
-if ((locales as readonly string[]).includes(segments[0])) segments.shift();
-const barePath = segments.length ? `/${segments.join('/')}` : '';
+const barePath = stripLocale(Astro.url.pathname);
+const pathFor = (loc: Locale) => alternatePaths?.[loc] ?? barePath;
 
-const canonical = new URL(`/${locale}${barePath}`, site).href;
+const canonical = new URL(localizedPath(locale, pathFor(locale)), site).href;
 const alternates = locales.map((loc) => ({
   locale: loc,
   hreflang: htmlLang[loc],
-  href: new URL(`/${loc}${barePath}`, site).href,
+  href: new URL(localizedPath(loc, pathFor(loc)), site).href,
 }));
 const ogImageUrl = new URL(ogImage, site).href;
 
@@ -119,7 +128,7 @@ const schemas = [person, ...jsonLd];
     {/* Open Graph */}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Nicolas Fiascaro" />
-    <meta property="og:locale" content={htmlLang[locale].replace('-', '_')} />
+    <meta property="og:locale" content={ogLocale[locale]} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />

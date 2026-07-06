@@ -2,7 +2,7 @@
 import Section from '../Section.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { useTranslations, type Locale } from '../../i18n/ui';
+import { localizedPath, useTranslations, type Locale } from '../../i18n/ui';
 import { projects } from '../../data/projects';
 
 interface Props {
@@ -57,7 +57,7 @@ const previews = items.filter((p) => p.hero);
         <li class="project">
           <a
             class="project__link"
-            href={`/${locale}/projects/${p.slug[locale]}/`}
+            href={localizedPath(locale, `/projects/${p.slug[locale]}/`)}
             data-project={p.id}
           >
             <span class="project__num mono-label">{p.num}</span>

@@ -17,50 +17,50 @@ export interface SkillFamily {
 export const skillFamilies: SkillFamily[] = [
   {
     key: 'design',
-    name: { 'fr-fr': 'Design', 'en-us': 'Design' },
+    name: { 'fr': 'Design', 'en': 'Design' },
     blurb: {
-      'fr-fr': 'Comprendre, cadrer, concevoir — du besoin réel au système.',
-      'en-us': 'Understand, frame, design — from real needs to systems.',
+      'fr': 'Comprendre, cadrer, concevoir — du besoin réel au système.',
+      'en': 'Understand, frame, design — from real needs to systems.',
     },
     skills: [
       {
-        label: { 'fr-fr': 'User research', 'en-us': 'User research' },
+        label: { 'fr': 'User research', 'en': 'User research' },
         tags: ['design'],
       },
       {
-        label: { 'fr-fr': 'Product design', 'en-us': 'Product design' },
+        label: { 'fr': 'Product design', 'en': 'Product design' },
         tags: ['design'],
       },
       {
-        label: { 'fr-fr': 'Prototypage', 'en-us': 'Prototyping' },
+        label: { 'fr': 'Prototypage', 'en': 'Prototyping' },
         tags: ['design', 'dev'],
       },
       {
-        label: { 'fr-fr': 'Design systems', 'en-us': 'Design systems' },
+        label: { 'fr': 'Design systems', 'en': 'Design systems' },
         tags: ['design', 'dev'],
       },
     ],
   },
   {
     key: 'engineering',
-    name: { 'fr-fr': 'Engineering', 'en-us': 'Engineering' },
+    name: { 'fr': 'Engineering', 'en': 'Engineering' },
     blurb: {
-      'fr-fr': 'Shipper des interfaces rapides, réactives, durables.',
-      'en-us': 'Ship fast, responsive, durable interfaces.',
+      'fr': 'Shipper des interfaces rapides, réactives, durables.',
+      'en': 'Ship fast, responsive, durable interfaces.',
     },
     skills: [
       {
-        label: { 'fr-fr': 'Développement frontend', 'en-us': 'Frontend development' },
+        label: { 'fr': 'Développement frontend', 'en': 'Frontend development' },
         tags: ['dev'],
       },
       {
-        label: { 'fr-fr': 'Web performance', 'en-us': 'Web performance' },
+        label: { 'fr': 'Web performance', 'en': 'Web performance' },
         tags: ['design', 'dev'],
       },
       {
         label: {
-          'fr-fr': 'Animations & micro-interactions',
-          'en-us': 'Animation & micro-interactions',
+          'fr': 'Animations & micro-interactions',
+          'en': 'Animation & micro-interactions',
         },
         tags: ['dev'],
       },
@@ -68,18 +68,18 @@ export const skillFamilies: SkillFamily[] = [
   },
   {
     key: 'craft',
-    name: { 'fr-fr': 'Craft', 'en-us': 'Craft' },
+    name: { 'fr': 'Craft', 'en': 'Craft' },
     blurb: {
-      'fr-fr': 'Le souci du détail qui rend une interface évidente pour tous.',
-      'en-us': 'The attention to detail that makes an interface obvious to everyone.',
+      'fr': 'Le souci du détail qui rend une interface évidente pour tous.',
+      'en': 'The attention to detail that makes an interface obvious to everyone.',
     },
     skills: [
       {
-        label: { 'fr-fr': 'Accessibilité', 'en-us': 'Accessibility' },
+        label: { 'fr': 'Accessibilité', 'en': 'Accessibility' },
         tags: ['design', 'dev'],
       },
       {
-        label: { 'fr-fr': 'Design engineering', 'en-us': 'Design engineering' },
+        label: { 'fr': 'Design engineering', 'en': 'Design engineering' },
         tags: ['design', 'dev'],
       },
     ],
