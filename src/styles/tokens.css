@@ -191,15 +191,15 @@
    deep so --accent-ink (near-white) always reads on it. The inline pre-paint
    script sets data-accent from localStorage to avoid a flash.
    ===================================================================== */
-:root[data-accent='emeraude'] {
-  --accent: oklch(0.5 0.11 162);
-  --accent-solid: oklch(0.48 0.11 162);
-  --accent-ink: oklch(0.98 0.02 160);
+:root[data-accent='foret'] {
+  --accent: oklch(0.44 0.1 152);
+  --accent-solid: oklch(0.42 0.1 152);
+  --accent-ink: oklch(0.98 0.02 155);
 }
-:root[data-accent='emeraude'][data-theme='dark'] {
-  --accent: oklch(0.72 0.13 165);
-  --accent-solid: oklch(0.5 0.12 163);
-  --accent-ink: oklch(0.98 0.02 160);
+:root[data-accent='foret'][data-theme='dark'] {
+  --accent: oklch(0.64 0.12 155);
+  --accent-solid: oklch(0.45 0.11 153);
+  --accent-ink: oklch(0.98 0.02 155);
 }
 
 :root[data-accent='ambre'] {
@@ -211,15 +211,4 @@
   --accent: oklch(0.82 0.13 85);
   --accent-solid: oklch(0.55 0.12 72);
   --accent-ink: oklch(0.99 0.01 85);
-}
-
-:root[data-accent='cobalt'] {
-  --accent: oklch(0.5 0.16 255);
-  --accent-solid: oklch(0.48 0.16 255);
-  --accent-ink: oklch(0.98 0.01 250);
-}
-:root[data-accent='cobalt'][data-theme='dark'] {
-  --accent: oklch(0.72 0.14 250);
-  --accent-solid: oklch(0.52 0.17 255);
-  --accent-ink: oklch(0.98 0.01 250);
 }

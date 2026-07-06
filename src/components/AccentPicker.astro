@@ -12,9 +12,8 @@ const fr = locale === 'fr';
 // picker (a mid, saturated take that reads in both themes).
 const accents = [
   { key: 'bordeaux', label: fr ? 'Bordeaux' : 'Bordeaux', swatch: 'oklch(0.5 0.15 25)' },
-  { key: 'emeraude', label: fr ? 'Émeraude' : 'Emerald', swatch: 'oklch(0.52 0.12 162)' },
+  { key: 'foret', label: fr ? 'Forêt' : 'Forest', swatch: 'oklch(0.45 0.1 153)' },
   { key: 'ambre', label: fr ? 'Ambre' : 'Amber', swatch: 'oklch(0.7 0.13 80)' },
-  { key: 'cobalt', label: fr ? 'Cobalt' : 'Cobalt', swatch: 'oklch(0.52 0.16 255)' },
 ];
 const label = fr ? 'Couleur d’accent' : 'Accent colour';
 ---
@@ -216,12 +215,16 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
       }
     };
 
-    // Reflect the persisted choice (already applied pre-paint by BaseLayout).
+    // Reflect the persisted choice (applied pre-paint by BaseLayout). Fall back
+    // to bordeaux if the stored value is no longer an offered accent, and
+    // re-apply so a stale [data-accent] gets cleaned off <html>.
+    const keys = opts.map((o) => o.dataset.accentValue);
     let current = 'bordeaux';
     try {
       current = localStorage.getItem(KEY) || 'bordeaux';
     } catch {}
-    markChecked(current);
+    if (!keys.includes(current)) current = 'bordeaux';
+    apply(current, false);
 
     toggle.addEventListener('click', () => setOpen(!isOpen()));
     for (const o of opts) {
