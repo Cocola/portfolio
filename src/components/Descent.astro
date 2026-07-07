@@ -686,11 +686,27 @@ const { nav = [] } = Astro.props;
       });
       render(0);
 
+      // A11y: inactive sections are visibility:hidden (out of the a11y tree and
+      // tab order), so after a jump we move focus INTO the revealed section, or
+      // keyboard / screen-reader users would stay stranded on the trigger.
+      // tabindex=-1 makes the section programmatically focusable; the focus is
+      // programmatic so it never triggers :focus-visible (no outline, no UX
+      // change), and preventScroll keeps Lenis in charge of the scroll.
+      sections.forEach((s) => s.setAttribute('tabindex', '-1'));
+      const focusSection = (idx: number) => {
+        const sec = sections[idx];
+        if (sec) requestAnimationFrame(() => sec.focus({ preventScroll: true }));
+      };
+
       // Click on a tick -> smooth scroll to the section's altitude.
       ticks.forEach((tick) => {
         tick.addEventListener('click', () => {
-          const p = tickProgress(Number(tick.dataset.navIndex));
-          lenis.scrollTo(st.start + p * (st.end - st.start), { duration: 1.1 });
+          const idx = Number(tick.dataset.navIndex);
+          const p = tickProgress(idx);
+          lenis.scrollTo(st.start + p * (st.end - st.start), {
+            duration: 1.1,
+            onComplete: () => focusSection(idx),
+          });
         });
       });
 
@@ -706,8 +722,12 @@ const { nav = [] } = Astro.props;
         if (!id || !idToIndex.has(id)) continue;
         link.addEventListener('click', (e) => {
           e.preventDefault();
-          const p = tickProgress(idToIndex.get(id)!);
-          lenis.scrollTo(st.start + p * (st.end - st.start), { duration: 1.1 });
+          const idx = idToIndex.get(id)!;
+          const p = tickProgress(idx);
+          lenis.scrollTo(st.start + p * (st.end - st.start), {
+            duration: 1.1,
+            onComplete: () => focusSection(idx),
+          });
         });
       }
 
