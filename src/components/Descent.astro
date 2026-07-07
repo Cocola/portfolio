@@ -297,12 +297,19 @@ const { nav = [] } = Astro.props;
     transition: color var(--dur-fast) var(--ease-out-quart);
   }
   .altimeter__tick::after {
+    /* Dash lengths (px, unitless so they can drive the scaleX ratio). Rendered
+       at full length; the resting state is a scaleX down. Animating transform
+       (not width) keeps the tick off the layout/paint path. */
+    --tick-len: 9;
+    --tick-len-active: 16;
     content: '';
-    width: 9px;
+    width: calc(var(--tick-len-active) * 1px);
     height: 2px;
     background: currentColor;
     flex: none;
-    transition: width var(--dur-fast) var(--ease-out-quart);
+    transform: scaleX(calc(var(--tick-len) / var(--tick-len-active)));
+    transform-origin: right center;
+    transition: transform var(--dur-fast) var(--ease-out-quart);
   }
   .altimeter__tick-label {
     font-family: var(--font-mono);
@@ -330,7 +337,7 @@ const { nav = [] } = Astro.props;
   .altimeter__tick:hover::after,
   .altimeter__tick:focus-visible::after,
   .altimeter__tick[data-active]::after {
-    width: 16px;
+    transform: scaleX(1);
   }
 
   @media (prefers-reduced-motion: reduce) {

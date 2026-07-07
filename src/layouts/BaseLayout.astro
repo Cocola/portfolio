@@ -104,14 +104,22 @@ const schemas = [person, ...jsonLd];
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    {/* Fontshare equivalents (to be replaced by self-hosted PP Editorial New +
-        ABC Diatype in polish): Sentient (display antiqua) + Switzer
-        (neutral grotesque body/UI). */}
-    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    {/* Self-hosted faces (see src/styles/fonts.css): Sentient (display antiqua)
+        + Switzer (neutral grotesque body/UI). Preload the two above-the-fold
+        weights so the hero title and body text paint without a swap flash. */}
     <link
-      rel="stylesheet"
-      href="https://api.fontshare.com/v2/css?f[]=sentient@300,400,500&f[]=switzer@400,500,600&display=swap"
+      rel="preload"
+      href="/fonts/sentient-300.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/switzer-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
     <title>{title}</title>
     <meta name="description" content={description} />

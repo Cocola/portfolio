@@ -1,0 +1,8 @@
+# nicolas-fiascaro.com — everything is crawlable (static HTML, no canvas-only content).
+User-agent: *
+Allow: /
+
+# Machine-readable site map for LLM agents.
+# See /llms.txt and /llms-full.txt
+
+Sitemap: https://www.nicolas-fiascaro.com/sitemap-index.xml

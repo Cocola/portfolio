@@ -2,7 +2,8 @@
    Global styles — modern reset + typographic base
    ===================================================================== */
 
-/* Clash Grotesk is loaded via a Fontshare <link> in BaseLayout (head). */
+/* Self-hosted faces: Sentient + Switzer (fonts.css), Geist Mono (fontsource). */
+@import './fonts.css';
 @import '@fontsource-variable/geist-mono';
 @import './tokens.css';
 

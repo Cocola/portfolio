@@ -1,0 +1,52 @@
+/* =====================================================================
+   Self-hosted display + body faces (was Fontshare CDN).
+   Sentient = display antiqua; Switzer = neutral grotesque (body/UI).
+   Files live in /public/fonts (served as-is, root-absolute URLs).
+   font-display: swap so text paints immediately with the fallback.
+   ===================================================================== */
+
+/* --- Sentient (display) --- */
+@font-face {
+  font-family: 'Sentient';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/sentient-300.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Sentient';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/sentient-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Sentient';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/sentient-500.woff2') format('woff2');
+}
+
+/* --- Switzer (body / UI) --- */
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/switzer-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/switzer-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/switzer-600.woff2') format('woff2');
+}
