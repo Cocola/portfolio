@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import Logo from './Logo.astro';
 import disc from '../assets/aerial-disc.png';
 
 interface Props {
@@ -15,6 +16,25 @@ const { nav = [] } = Astro.props;
 // the camera (scale + blur) as we fall, until it lands on the ground.
 // Fallback: reduced-motion / mobile / small screen -> static flow (SEO DOM).
 ---
+
+{/* Decide BEFORE first paint whether the intro (and thus the loading screen)
+    will run. Only first-visit + motion-OK gets the loader; returning /
+    reduced-motion / no-JS visitors see the hero straight away (no flash). */}
+<script is:inline>
+  (function () {
+    try {
+      var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var seen = sessionStorage.getItem('nf-intro') === '1';
+      if (!reduce && !seen) document.documentElement.classList.add('nf-loading');
+    } catch (e) {}
+  })();
+</script>
+
+{/* Loading screen: covers the hero from the first paint, holds while the
+    aerial disc + fonts load, then fades exactly as the intro takeoff begins. */}
+<div id="nf-loader" aria-hidden="true">
+  <Logo size={52} class="nf-loader__mark" title="" />
+</div>
 
 <div class="intro" data-intro aria-hidden="true">
   <div class="intro__media">
@@ -82,6 +102,56 @@ const { nav = [] } = Astro.props;
   body.is-intro .intro {
     display: grid;
     place-items: center;
+  }
+
+  /* --- Loading screen (gated by html.nf-loading, set pre-paint) --- */
+  #nf-loader {
+    display: none;
+  }
+  :global(html.nf-loading) #nf-loader {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-toast); /* above the intro overlay */
+    display: grid;
+    place-items: center;
+    background-color: var(--page);
+    opacity: 1;
+    transition: opacity 0.6s var(--ease-out-quart);
+    /* Failsafe: if the main script never dismisses us (JS error), reveal the
+       page anyway after a few seconds. */
+    animation: nf-loader-failsafe 0.5s linear 8s forwards;
+  }
+  :global(html.nf-loading) #nf-loader[data-done='true'] {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .nf-loader__mark {
+    color: var(--ink);
+    animation: nf-loader-pulse 1.7s ease-in-out infinite;
+  }
+  @keyframes nf-loader-pulse {
+    0%,
+    100% {
+      opacity: 0.32;
+      transform: scale(0.94);
+    }
+    50% {
+      opacity: 0.92;
+      transform: scale(1);
+    }
+  }
+  @keyframes nf-loader-failsafe {
+    to {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nf-loader__mark {
+      animation: none;
+      opacity: 0.9;
+    }
   }
   .intro__media {
     position: relative;
@@ -429,6 +499,32 @@ const { nav = [] } = Astro.props;
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const big = window.innerWidth >= 1024 && window.innerHeight >= 680;
+
+  // Loading screen (only present when html.nf-loading was set pre-paint, i.e.
+  // first visit + motion-OK). Fades out and self-removes once dismissed.
+  const html = document.documentElement;
+  const loader = document.getElementById('nf-loader');
+  const hideLoader = () => {
+    if (!loader) return;
+    loader.dataset.done = 'true';
+    window.setTimeout(() => {
+      loader.remove();
+      html.classList.remove('nf-loading');
+    }, 700);
+  };
+  // Gate the reveal on the aerial disc (+ fonts), with a hard cap so a slow or
+  // broken asset never hangs the loader.
+  const assetsReady = () => {
+    const discImg = document.querySelector('.intro__photo');
+    const disc = new Promise<void>((res) => {
+      if (!discImg || (discImg as HTMLImageElement).complete) return res();
+      discImg.addEventListener('load', () => res(), { once: true });
+      discImg.addEventListener('error', () => res(), { once: true });
+    });
+    const fonts = document.fonts ? document.fonts.ready : Promise.resolve();
+    const cap = new Promise<void>((res) => window.setTimeout(res, 2600));
+    return Promise.race([Promise.all([disc, fonts]), cap]);
+  };
 
   if (!reduce) {
     gsap.registerPlugin(ScrollTrigger);
@@ -778,7 +874,7 @@ const { nav = [] } = Astro.props;
         ScrollTrigger.refresh();
       };
 
-      const tl = gsap.timeline({ onComplete: finish });
+      const tl = gsap.timeline({ paused: true, onComplete: finish });
       // We're seen from afar (scale 0.5), then we TAKE OFF: the aerial view
       // shrinks to a point as it recedes and fades into the theme
       // tint (the backdrop is already light in light mode, dark in dark), then the hero
@@ -812,6 +908,13 @@ const { nav = [] } = Astro.props;
       window.addEventListener('wheel', skip, { once: true, passive: true });
       window.addEventListener('touchstart', skip, { once: true, passive: true });
       window.addEventListener('pointerdown', skip, { once: true });
+
+      // Hold on the loading screen until assets are ready, then hand off: fade
+      // the loader out exactly as the takeoff timeline begins.
+      assetsReady().then(() => {
+        hideLoader();
+        tl.play(0);
+      });
     } else if (intro) {
       // Intro already seen this session: remove the overlay.
       intro.remove();
