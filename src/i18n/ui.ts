@@ -28,7 +28,7 @@ export const ui = {
     'nav.skipToContent': 'Aller au contenu',
     'hero.role': 'Design Engineer',
     'hero.tagline':
-      'Je conçois et développe la couche produit, du design system à l’interface.',
+      'Je conçois et développe la couche produit, de la recherche au code en production.',
     'hero.viewWork': 'Voir les projets',
     'hero.contact': 'Me contacter',
     'hero.cv': 'Télécharger mon CV',
@@ -51,7 +51,7 @@ export const ui = {
     'nav.skipToContent': 'Skip to content',
     'hero.role': 'Design Engineer',
     'hero.tagline':
-      'I design and build the product layer, from design system to interface.',
+      'I design and build the product layer, from research to production code.',
     'hero.viewWork': 'View work',
     'hero.contact': 'Get in touch',
     'hero.cv': 'Download my résumé',

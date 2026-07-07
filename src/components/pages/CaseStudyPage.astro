@@ -35,7 +35,7 @@ const disciplines = project.tags.map((tag) =>
   tag === 'design' ? 'Design' : fr ? 'Développement' : 'Engineering',
 );
 
-const title = `${project.title[lang]} — Nicolas Fiascaro`;
+const title = `${project.title[lang]} · Nicolas Fiascaro`;
 const description = study?.data.lead ?? project.summary[lang];
 
 // The slug differs per locale, so each locale's bare path must be built from

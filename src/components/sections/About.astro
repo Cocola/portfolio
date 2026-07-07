@@ -18,15 +18,15 @@ const fr = locale === 'fr';
       <p class="about__lead">
         {
           fr
-            ? 'Quinze ans à opérer à l’intersection du design et du code, de l’agence au produit.'
-            : 'Fifteen years working at the intersection of design and code, from agency to product.'
+            ? 'À l’intersection du design et du code, de l’agence au produit.'
+            : 'At the intersection of design and code, from agency to product.'
         }
       </p>
       <p class="about__text">
         {
           fr
-            ? 'Parti de l’imprimerie, j’ai basculé vers le web pour la puissance du CSS, des interactions et du développement frontend. Aujourd’hui je conçois et je développe la couche produit : discovery, prototypage, design systems et intégration, pour livrer des expériences accessibles, performantes et durables.'
-            : 'Starting out in print, I moved to the web for the power of CSS, interaction and front-end development. Today I design and build the product layer: discovery, prototyping, design systems and integration, to deliver accessible, fast and durable experiences.'
+            ? 'Cœur de métier : la conception UX/UI et le frontend. Le développement assisté par agents a élargi le rayon d’action, de la recherche au produit livré, sans jamais sacrifier le soin apporté à chaque interface. Le craft d’abord ; l’outil au service du craft.'
+            : 'Core focus: UX/UI design and front-end. Agent-assisted development has widened the range, from research to a shipped product, without ever sacrificing the care each interface deserves. Craft first; tooling in service of craft.'
         }
       </p>
     </div>
@@ -59,8 +59,10 @@ const fr = locale === 'fr';
       rel="noopener"
       target="_blank"
     >
-      {fr ? 'Lire les recommandations sur LinkedIn' : 'Read the recommendations on LinkedIn'}
-      <span aria-hidden="true">→</span>
+      <span class="recos__label">
+        {fr ? 'Lire les recommandations sur LinkedIn' : 'Read the recommendations on LinkedIn'}
+      </span>
+      <span class="recos__arrow" aria-hidden="true">→</span>
     </a>
   </aside>
 </Section>
@@ -142,18 +144,20 @@ const fr = locale === 'fr';
     text-decoration: none;
     white-space: nowrap;
   }
-  .recos__link span {
+  .recos__arrow {
     transition: transform var(--dur-base) var(--ease-out-expo);
   }
-  .recos__link:hover {
+  /* Underline only the label, never the arrow (an underlined arrow looks like a
+     stray tick). */
+  .recos__link:hover .recos__label {
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }
-  .recos__link:hover span {
+  .recos__link:hover .recos__arrow {
     transform: translateX(0.3em);
   }
   @media (prefers-reduced-motion: reduce) {
-    .recos__link:hover span {
+    .recos__link:hover .recos__arrow {
       transform: none;
     }
   }

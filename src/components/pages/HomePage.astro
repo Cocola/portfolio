@@ -16,7 +16,7 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-const title = `Nicolas Fiascaro — ${t('hero.role')}`;
+const title = `Nicolas Fiascaro · ${t('hero.role')}`;
 const description = t('hero.tagline');
 const fr = locale === 'fr';
 
