@@ -106,6 +106,14 @@ const home = localizedPath(locale, '/');
     translate: 0 -100%;
     pointer-events: none;
   }
+  /* Final landing (static flow): the closing full-screen section is its own
+     header-less "cover" — the bar slides away once it fills the viewport
+     (body.is-landing, set by Contact's observer). */
+  :global(body.is-landing) .site-header {
+    opacity: 0;
+    translate: 0 -100%;
+    pointer-events: none;
+  }
   .site-header__inner {
     display: flex;
     align-items: center;

@@ -60,7 +60,7 @@ export const testimonials: Testimonial[] = [
   {
     quote: {
       'fr':
-        'Pendant plus de trois ans chez BeAPI, travailler sous la supervision de Nicolas a été une expérience enrichissante : exigeant, mais toujours dans l’équité et le partage.',
+        'Pendant plus de trois ans chez BeAPI, travailler sous la supervision de Nicolas a été une expérience enrichissante : exigeant, mais toujours dans l’équité et le partage.',
       'en':
         'For over three years at BeAPI, working under Nicolas was a rewarding experience: demanding, but always fair and generous with his knowledge.',
     },

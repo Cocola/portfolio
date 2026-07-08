@@ -15,12 +15,12 @@ heroAlt: Écrans de l’app PennyPet après refonte, portés par le dégradé ro
 
 ## Le contexte
 
-PennyPet est une app B2C pour les *pet parents* : un compte bancaire avec cashback chez
+PennyPet est une app B2C pour les *pet parents* : un compte bancaire avec cashback chez
 des partenaires et une assurance animale à tarif fixe. Plusieurs redesigns confiés à des
-prestataires externes n’avaient rien donné ; une seule piste graphique tenait la route,
+prestataires externes n’avaient rien donné ; une seule piste graphique tenait la route,
 un dégradé rose-violet pour les textes mis en avant, mais elle restait sous-exploitée.
 
-J’ai proposé d’aller au bout : un univers visuel complet, une image de marque modernisée
+J’ai proposé d’aller au bout : un univers visuel complet, une image de marque modernisée
 et des parcours repensés. Le lancement d’une fonctionnalité de gamification a servi de
 porte d’entrée à la refonte.
 
@@ -32,7 +32,7 @@ poids, espacement) pour la lisibilité et l’équilibre des écrans.
 
 ## Couleurs
 
-Le dégradé rose-violet devient l’élément central : il rythme l’interface et met en valeur
+Le dégradé rose-violet devient l’élément central : il rythme l’interface et met en valeur
 les actions clés et la gamification. J’ai rationalisé les teintes secondaires en une
 palette cohérente, accessible et facilement déclinable, qui porte notamment la présentation
 des trois offres. L’accessibilité a été tenue au minimum au standard WCAG AA.
@@ -40,16 +40,16 @@ des trois offres. L’accessibilité a été tenue au minimum au standard WCAG A
 ## Design System
 
 J’ai construit un design system complet dans Figma, adossé aux tokens Tailwind via un
-fichier communautaire : une correspondance directe entre design et code, moins d’écarts,
+fichier communautaire : une correspondance directe entre design et code, moins d’écarts,
 un développement accéléré. Six gabarits d’écrans principaux ont suffi à couvrir près de
 190 écrans, en maximisant la réutilisabilité.
 
 ## Développement
 
-La refonte UI s’est accompagnée d’un refactor React Native complet :
+La refonte UI s’est accompagnée d’un refactor React Native complet :
 
-- migration de NativeWind v3 vers v4 ;
-- reconstruction des ~190 écrans sur les nouveaux gabarits ;
+- migration de NativeWind v3 vers v4 ;
+- reconstruction des ~190 écrans sur les nouveaux gabarits ;
 - une librairie de composants unifiée.
 
 La production d’écrans est devenue nettement plus rapide et fiable. Environ cinq semaines
@@ -60,5 +60,5 @@ ont suffi pour migrer toute l’app.
 La nouvelle identité a été très bien accueillie par les utilisateurs comme par les
 investisseurs, renforçant la crédibilité de PennyPet. En interne, le design system et les
 gabarits ont apporté un gain de productivité net (estimé à environ **200 %** en design et
-dev) tout en clarifiant la stack technique : **190 écrans** refondus, **6 gabarits**
+dev) tout en clarifiant la stack technique : **190 écrans** refondus, **6 gabarits**
 réutilisables, en **5 semaines**.

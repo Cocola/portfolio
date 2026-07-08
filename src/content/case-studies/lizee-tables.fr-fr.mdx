@@ -1,7 +1,7 @@
 ---
 project: lizee-tables
 locale: fr
-lead: "Refonte des tableaux du RMS de Lizee : recherche (Mobbin), tests Maze (8,9/10) et un composant de tableau souple dans le Design System, déployé progressivement sur 10 tableaux."
+lead: "Refonte des tableaux du RMS de Lizee : recherche (Mobbin), tests Maze (8,9/10) et un composant de tableau souple dans le Design System, déployé progressivement sur 10 tableaux."
 role: Product design & front-end
 period: '2023'
 stack:
@@ -17,20 +17,20 @@ import Video from '../../components/Video.astro';
 ## Le contexte
 
 En haute saison, les métiers de l’entrepôt (managers, opérateurs, responsables SAV) doivent
-optimiser leurs opérations dans le RMS. Or les tableaux sont peu exploitables : pas de
+optimiser leurs opérations dans le RMS. Or les tableaux sont peu exploitables : pas de
 traitement en masse, informations masquées sous le scroll, hiérarchie de colonnes
 perfectible et tri difficile.
 
 ## Comprendre le problème
 
-- **Quel problème ?** Des tableaux peu utilisables et non paramétrables, et plusieurs types
+- **Quel problème ?** Des tableaux peu utilisables et non paramétrables, et plusieurs types
   de tableaux hétérogènes.
-- **Pourquoi ?** Uniformiser le style et l’usage, et permettre de filtrer, choisir et
+- **Pourquoi ?** Uniformiser le style et l’usage, et permettre de filtrer, choisir et
   ordonner les colonnes pour personnaliser son environnement de travail.
-- **Pour qui ?** D’abord les profils qui utilisent le plus l’outil : opérateurs et managers
+- **Pour qui ?** D’abord les profils qui utilisent le plus l’outil : opérateurs et managers
   en entrepôt.
-- **Jobs to be done ?** Filtrer et trier sur un critère pour trouver l’info plus vite ;
-  choisir les colonnes affichées et leur ordre ; conserver cette personnalisation d’une
+- **Jobs to be done ?** Filtrer et trier sur un critère pour trouver l’info plus vite ;
+  choisir les colonnes affichées et leur ordre ; conserver cette personnalisation d’une
   session à l’autre.
 
 ## Prise de recul
@@ -38,13 +38,13 @@ perfectible et tri difficile.
 Une évaluation de l’opportunité (importance client 2/5, taille 4/5, différenciation marché
 3/5, impact interne 4/5) situe le besoin comme modéré mais large, avec un vrai gain de
 productivité interne. La productivité restant un pilier, Lizee décide d’investir. Les KPIs
-suivis : part de tableaux par défaut contre personnalisés, nombre de personnalisations par
+suivis : part de tableaux par défaut contre personnalisés, nombre de personnalisations par
 mois, temps passé à personnaliser, taux de rebond des pages à tableaux.
 
 ## Idéation
 
 Des interviews (responsable logistique, responsable SAV, opérateurs) et un inventaire interne
-des fonctionnalités à tableaux confirment les hypothèses : sélection et modification en masse,
+des fonctionnalités à tableaux confirment les hypothèses : sélection et modification en masse,
 tri des colonnes, recherche améliorée, filtres par catégorie, personnalisation des vues. Via
 **Mobbin**, une revue de dizaines d’interfaces à tableaux permet d’identifier des patterns UX
 éprouvés et de conforter les choix.
@@ -86,8 +86,8 @@ ajustements tout en planifiant les fonctionnalités suivantes.
 
 ## Impact
 
-Depuis la mise en place, les retours sont positifs : au-delà du côté pratique, de nouvelles
+Depuis la mise en place, les retours sont positifs : au-delà du côté pratique, de nouvelles
 fonctionnalités ont été débloquées par les capacités du tableau, et d’autres besoins
-deviennent plus faciles à adresser. En chiffres : **10 tableaux** refondus, **24 utilisateurs**
+deviennent plus faciles à adresser. En chiffres : **10 tableaux** refondus, **24 utilisateurs**
 dans l’étude, **8,9/10** de satisfaction, un **usability score de 72,8**, et **29 variantes
 Figma** entre cellules et lignes.

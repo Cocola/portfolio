@@ -73,20 +73,24 @@ const jsonLd = [
           class="case__pager"
           aria-label={fr ? 'Navigation entre projets' : 'Project navigation'}
         >
+          {/* On phones only the arrows stay visible (the words would wrap the
+              topline); the accessible name keeps direction + project title. */}
           <a
             class="case__pager-link mono-label"
             href={localizedPath(locale, `/projects/${prev.slug[locale]}/`)}
             title={prev.title[lang]}
+            aria-label={`${fr ? 'Projet précédent' : 'Previous project'} — ${prev.title[lang]}`}
           >
-            ← {fr ? 'Précédent' : 'Previous'}
+            ←<span class="case__pager-word"> {fr ? 'Précédent' : 'Previous'}</span>
           </a>
           <span class="case__pager-sep" aria-hidden="true">/</span>
           <a
             class="case__pager-link mono-label"
             href={localizedPath(locale, `/projects/${next.slug[locale]}/`)}
             title={next.title[lang]}
+            aria-label={`${fr ? 'Projet suivant' : 'Next project'} — ${next.title[lang]}`}
           >
-            {fr ? 'Suivant' : 'Next'} →
+            <span class="case__pager-word">{fr ? 'Suivant' : 'Next'} </span>→
           </a>
         </nav>
       </div>
@@ -350,6 +354,22 @@ const jsonLd = [
   }
 
   @media (max-width: 40rem) {
+    /* Keep eyebrow + pager on ONE line: arrows only, no wrap. */
+    .case__topline {
+      flex-wrap: nowrap;
+      align-items: baseline;
+    }
+    .case__pager {
+      flex: none;
+    }
+    .case__pager-word {
+      display: none;
+    }
+    /* Arrows alone are tiny tap targets: give the links breathing room. */
+    .case__pager-link {
+      padding: 0.5em 0.35em;
+      margin-block: -0.5em;
+    }
     .case__foot {
       grid-template-columns: 1fr;
     }

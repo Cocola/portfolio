@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../Header.astro';
-import Footer from '../Footer.astro';
 import Descent from '../Descent.astro';
 import Hero from '../sections/Hero.astro';
 import Skills from '../sections/Skills.astro';
@@ -39,5 +38,7 @@ const nav = [
     <About {locale} />
     <Contact {locale} />
   </Descent>
-  <Footer slot="footer" {locale} />
+  {/* No global footer here: the final landing section (Contact) already
+      carries the copyright and social links — a second footer read as
+      a duplicate right below it. Case-study pages keep theirs. */}
 </BaseLayout>

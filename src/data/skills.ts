@@ -19,7 +19,7 @@ export const skillFamilies: SkillFamily[] = [
     key: 'design',
     name: { 'fr': 'Design', 'en': 'Design' },
     blurb: {
-      'fr': 'Comprendre, cadrer, concevoir : du besoin réel au système.',
+      'fr': 'Comprendre, cadrer, concevoir : du besoin réel au système.',
       'en': 'Understand, frame, design: from real needs to systems.',
     },
     skills: [
