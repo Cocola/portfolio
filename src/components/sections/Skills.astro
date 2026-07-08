@@ -28,12 +28,20 @@ const tagLabel: Record<Tag, string> = { design: 'Design', dev: 'Dev' };
             {family.skills.map((skill) => (
               <li class="skill">
                 <span class="skill__label">{skill.label[locale]}</span>
+                {/* Both tag slots are always rendered so the Design and Dev
+                    columns line up across rows; an absent tag is kept as an
+                    invisible placeholder (out of the a11y tree). */}
                 <span class="skill__tags">
-                  {skill.tags.map((tag) => (
-                    <span class:list={['tag', `tag--${tag}`, 'mono-label']}>
-                      {tagLabel[tag]}
-                    </span>
-                  ))}
+                  <span
+                    class:list={['tag', 'tag--design', 'mono-label', { 'tag--empty': !skill.tags.includes('design') }]}
+                  >
+                    {tagLabel.design}
+                  </span>
+                  <span
+                    class:list={['tag', 'tag--dev', 'mono-label', { 'tag--empty': !skill.tags.includes('dev') }]}
+                  >
+                    {tagLabel.dev}
+                  </span>
                 </span>
               </li>
             ))}
@@ -98,7 +106,13 @@ const tagLabel: Record<Tag, string> = { design: 'Design', dev: 'Dev' };
     flex: none;
   }
   .tag {
-    padding: 0.3em 0.7em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Uppercase labels have no descenders, so with line-height:1 and symmetric
+       vertical padding the caps sit optically high in the pill. Nudge the
+       vertical padding (a hair more on top) to recenter the glyphs. */
+    padding: 0.42em 0.7em 0.28em;
     border-radius: var(--radius-pill);
     line-height: 1;
   }
@@ -110,6 +124,11 @@ const tagLabel: Record<Tag, string> = { design: 'Design', dev: 'Dev' };
     background-color: transparent;
     color: var(--ink-muted);
     border: 1px solid var(--hairline);
+  }
+  /* Absent tag: keep the slot's footprint (columns stay aligned) but hide it
+     visually and from assistive tech. */
+  .tag--empty {
+    visibility: hidden;
   }
 
   @media (max-width: 46rem) {
