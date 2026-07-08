@@ -33,7 +33,9 @@ const { nav = [] } = Astro.props;
 {/* Loading screen: covers the hero from the first paint, holds while the
     aerial disc + fonts load, then fades exactly as the intro takeoff begins. */}
 <div id="nf-loader" aria-hidden="true">
-  <Logo size={52} class="nf-loader__mark" title="" />
+  <div class="nf-loader__inner">
+    <Logo size={52} class="nf-loader__mark" title="" />
+  </div>
 </div>
 
 <div class="intro" data-intro aria-hidden="true">
@@ -124,6 +126,15 @@ const { nav = [] } = Astro.props;
   :global(html.nf-loading) #nf-loader[data-done='true'] {
     opacity: 0;
     pointer-events: none;
+  }
+  /* Lift the mark above the intro disc: during the loader -> takeoff handoff
+     both are centered, so a raised mark reads as sitting ABOVE the receding
+     disc rather than stamped on top of it. */
+  #nf-loader {
+    --loader-lift: 30vh;
+  }
+  .nf-loader__inner {
+    transform: translateY(calc(-1 * var(--loader-lift)));
   }
   .nf-loader__mark {
     color: var(--ink);
