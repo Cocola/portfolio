@@ -1,6 +1,5 @@
 ---
 import { Image } from 'astro:assets';
-import Logo from './Logo.astro';
 import disc from '../assets/aerial-disc.png';
 
 interface Props {
@@ -38,13 +37,10 @@ const { nav = [] } = Astro.props;
   })();
 </script>
 
-{/* Loading screen: covers the hero from the first paint, holds while the
-    aerial disc + fonts load, then fades exactly as the intro takeoff begins. */}
-<div id="nf-loader" aria-hidden="true">
-  <div class="nf-loader__inner">
-    <Logo size={52} class="nf-loader__mark" title="" />
-  </div>
-</div>
+{/* Loading screen: a plain backdrop that covers the hero from the first paint
+    and holds while the aerial disc + fonts load, then fades exactly as the
+    intro takeoff (zoom-out) begins. No logo — just the zoom-out. */}
+<div id="nf-loader" aria-hidden="true"></div>
 
 <div class="intro" data-intro aria-hidden="true">
   <div class="intro__media">
@@ -135,41 +131,11 @@ const { nav = [] } = Astro.props;
     opacity: 0;
     pointer-events: none;
   }
-  /* Lift the mark above the intro disc: during the loader -> takeoff handoff
-     both are centered, so a raised mark reads as sitting ABOVE the receding
-     disc rather than stamped on top of it. */
-  #nf-loader {
-    --loader-lift: 30vh;
-  }
-  .nf-loader__inner {
-    transform: translateY(calc(-1 * var(--loader-lift)));
-  }
-  .nf-loader__mark {
-    color: var(--ink);
-    animation: nf-loader-pulse 1.7s ease-in-out infinite;
-  }
-  @keyframes nf-loader-pulse {
-    0%,
-    100% {
-      opacity: 0.32;
-      transform: scale(0.94);
-    }
-    50% {
-      opacity: 0.92;
-      transform: scale(1);
-    }
-  }
   @keyframes nf-loader-failsafe {
     to {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .nf-loader__mark {
-      animation: none;
-      opacity: 0.9;
     }
   }
   .intro__media {
