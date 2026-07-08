@@ -893,7 +893,9 @@ const { nav = [] } = Astro.props;
       tl.set(media, { scale: 0.5, filter: 'blur(0px)', yPercent: 0 });
       tl.set(descent, { visibility: 'visible' });
       tl.set(heroBits, { y: 28, opacity: 0 });
-      if (header) tl.set(header, { yPercent: -140 });
+      // The header stays hidden for the whole takeoff (via body.is-intro in CSS)
+      // and fades in only once the intro finishes — no menu flashing over the
+      // moving transition.
       // 1. The disc recedes and disappears into the theme background.
       tl.to(media, {
         scale: 0.01,
@@ -910,9 +912,6 @@ const { nav = [] } = Astro.props;
         { y: 0, opacity: 1, duration: 0.9, stagger: 0.12, ease: 'expo.out' },
         '-=0.45',
       );
-      // The header drops in from the top once the backdrop is revealed.
-      if (header)
-        tl.to(header, { yPercent: 0, duration: 0.7, ease: 'expo.out' }, '-=0.6');
 
       // Skippable: a scroll/click gesture speeds up the intro.
       const skip = () => tl.timeScale(3.5);

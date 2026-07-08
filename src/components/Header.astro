@@ -84,7 +84,17 @@ const home = localizedPath(locale, '/');
     inset-inline: 0;
     z-index: var(--z-nav);
     color: var(--ink);
-    transition: color var(--dur-base) var(--ease-out-quart);
+    transition:
+      color var(--dur-base) var(--ease-out-quart),
+      opacity 0.55s var(--ease-out-quart);
+  }
+  /* During the intro takeoff, keep the header out of the way entirely and fade
+     it in only once the intro finishes (body.is-intro removed). Opacity only —
+     the dolly "tuck" animates the header's transform via GSAP, so a transform
+     here would fight it. */
+  :global(body.is-intro) .site-header {
+    opacity: 0;
+    pointer-events: none;
   }
   .site-header__inner {
     display: flex;
