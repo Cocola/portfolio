@@ -25,7 +25,15 @@ const { nav = [] } = Astro.props;
     try {
       var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
       var seen = sessionStorage.getItem('nf-intro') === '1';
-      if (!reduce && !seen) document.documentElement.classList.add('nf-loading');
+      if (!reduce && !seen) {
+        document.documentElement.classList.add('nf-loading');
+        // Failsafe: the header is hidden while nf-loading is set, so if the main
+        // script never runs (JS error), clear it after a few seconds so the
+        // header can't stay stuck off-screen.
+        setTimeout(function () {
+          document.documentElement.classList.remove('nf-loading');
+        }, 8000);
+      }
     } catch (e) {}
   })();
 </script>
@@ -893,9 +901,9 @@ const { nav = [] } = Astro.props;
       tl.set(media, { scale: 0.5, filter: 'blur(0px)', yPercent: 0 });
       tl.set(descent, { visibility: 'visible' });
       tl.set(heroBits, { y: 28, opacity: 0 });
-      // The header stays hidden for the whole takeoff (via body.is-intro in CSS)
-      // and fades in only once the intro finishes — no menu flashing over the
-      // moving transition.
+      // The header stays hidden for the whole takeoff (via html.nf-loading +
+      // body.is-intro in CSS) and slides in only once the intro finishes — no
+      // menu appearing over the moving transition.
       // 1. The disc recedes and disappears into the theme background.
       tl.to(media, {
         scale: 0.01,

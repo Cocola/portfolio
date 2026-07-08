@@ -86,14 +86,20 @@ const home = localizedPath(locale, '/');
     color: var(--ink);
     transition:
       color var(--dur-base) var(--ease-out-quart),
-      opacity 0.55s var(--ease-out-quart);
+      opacity 0.6s var(--ease-out-quart),
+      translate 0.7s var(--ease-out-expo);
   }
-  /* During the intro takeoff, keep the header out of the way entirely and fade
-     it in only once the intro finishes (body.is-intro removed). Opacity only —
-     the dolly "tuck" animates the header's transform via GSAP, so a transform
-     here would fight it. */
+  /* Intro: the header is hidden FROM THE FIRST PAINT (html.nf-loading is set
+     pre-paint) and stays hidden through the whole takeoff (body.is-intro), so
+     there is never a visible fade-out. It slides in from the top only once the
+     intro finishes and both classes are gone.
+     We move it with the `translate` property (not `transform`): the dolly
+     "tuck" animates the header's `transform` via GSAP, and the two CSS
+     properties are independent, so they never fight. */
+  :global(html.nf-loading) .site-header,
   :global(body.is-intro) .site-header {
     opacity: 0;
+    translate: 0 -100%;
     pointer-events: none;
   }
   .site-header__inner {
