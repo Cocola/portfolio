@@ -163,6 +163,28 @@ const schemas = [person, ...jsonLd];
         />
       ))
     }
+
+    {/* Google Analytics 4 — production builds only, so dev sessions never
+        pollute the stats. Plain async gtag: the site ships so little JS that
+        the tag doesn't dent Lighthouse; revisit (Partytown) only if TBT moves. */}
+    {
+      import.meta.env.PROD && (
+        <>
+          <script
+            is:inline
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-24PVJWPTQ5"
+          />
+          <script
+            is:inline
+            set:html={`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-24PVJWPTQ5');`}
+          />
+        </>
+      )
+    }
   </head>
   <body>
     <div class="atmosphere" aria-hidden="true"></div>
