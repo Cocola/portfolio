@@ -61,6 +61,12 @@
   --on-ink: var(--page); /* text on a solid --ink: follows the theme background */
   --surface: var(--surface-on-light);
   --hairline: var(--hairline-on-light);
+  /* Cloud wisps (intro takeoff + descent depth layer): a flat tint revealed
+     through a raster alpha mask (see /textures/cloud-*.webp). Explicit per
+     theme — dark wisps on paper, light wisps on charcoal — replacing the old
+     soft-light blend that Firefox/Safari mishandled and that read too weak
+     on the light paper. */
+  --cloud-tint: oklch(0.42 0.012 70 / 0.6);
 
   /* --- Accent: the single brand color, a deep wine red (bordeaux) ---
      The lone exception to the B&W system. Rationed: selective emphasis +
@@ -163,6 +169,7 @@
   --ink-muted: var(--ink-muted-light);
   --surface: var(--surface-on-dark);
   --hairline: var(--hairline-on-dark);
+  --cloud-tint: oklch(0.93 0.008 80 / 0.5);
   /* Lightened bordeaux so it pops on charcoal; fill stays deep enough
      to keep --accent-ink legible. */
   --accent: oklch(0.60 0.155 23);
@@ -177,6 +184,7 @@
     --ink-muted: var(--ink-muted-light);
     --surface: var(--surface-on-dark);
     --hairline: var(--hairline-on-dark);
+    --cloud-tint: oklch(0.93 0.008 80 / 0.5);
     --accent: oklch(0.60 0.155 23);
     --accent-solid: oklch(0.47 0.15 26);
     --accent-ink: oklch(0.98 0.006 80);

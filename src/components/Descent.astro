@@ -55,6 +55,15 @@ const { nav = [] } = Astro.props;
       loading="eager"
     />
   </div>
+  {/* Three cloud strata IN FRONT of the ground, selling the altitude gained.
+      --b (bottom) is a twin of the descent depth cloud--b: it sweeps past then
+      DECELERATES into that cloud's resting state, so when the overlay
+      crossfades away the ambient hero cloud beneath reads as the same object —
+      we settle among the clouds. --a and --a2 are the fast near passes,
+      crossed one after the other on the way up. */}
+  <span class="intro__cloud intro__cloud--b"></span>
+  <span class="intro__cloud intro__cloud--a"></span>
+  <span class="intro__cloud intro__cloud--a2"></span>
 </div>
 
 <div class="descent">
@@ -160,6 +169,57 @@ const { nav = [] } = Astro.props;
   :global(html[data-theme='dark']) .intro__photo {
     filter: grayscale(1) contrast(1.04) brightness(0.6);
   }
+  /* Takeoff cloud strata: same fractal noise + soft-light as the descent
+     clouds (one vocabulary, legible on both themes). The blur is STATIC
+     (rasterised once): scaling the pre-blurred plane down sharpens it
+     optically for free — near = out of focus, far = crisp — without
+     re-rasterising a viewport-sized filter every frame (mobile-safe). */
+  /* Takeoff strata: same raster-mask technique as the descent clouds (one
+     vocabulary, works in every engine). The pass strata use the SHARP texture
+     — higher noise frequency and a pushed alpha curve, blur baked in — so the
+     structure still reads during a 1-second pass while stretched ~4.6x. */
+  .intro__cloud {
+    position: absolute;
+    inset: -25%;
+    pointer-events: none;
+    background-color: var(--cloud-tint);
+    -webkit-mask-image: url('/textures/cloud-sharp.webp');
+    mask-image: url('/textures/cloud-sharp.webp');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: cover;
+    mask-size: cover;
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+  /* Second pass: same texture, different crop = a different cloud. */
+  .intro__cloud--a2 {
+    -webkit-mask-size: 240% 240%;
+    mask-size: 240% 240%;
+    -webkit-mask-position: 28% 68%;
+    mask-position: 28% 68%;
+  }
+  /* --b mirrors the descent depth cloud--b EXACTLY (geometry, texture, drift):
+     its settle state (scale 0.55 ~ the depth cloud's translateZ at the hero
+     dwell) must be pixel-close for the overlay crossfade to read as the same
+     cloud. */
+  .intro__cloud--b {
+    inset: -100%;
+    -webkit-mask-image: url('/textures/cloud-soft.webp');
+    mask-image: url('/textures/cloud-soft.webp');
+    -webkit-mask-size: 180% 180%;
+    mask-size: 180% 180%;
+    -webkit-mask-position: 70% 60%;
+    mask-position: 70% 60%;
+    animation: cloud-drift-b 52s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .intro__cloud--b {
+      animation: none;
+    }
+  }
   /* Prevents any intro flash before JS init on the relevant screens */
   body.is-intro .descent {
     visibility: hidden;
@@ -224,10 +284,12 @@ const { nav = [] } = Astro.props;
        plane it blows up and engulfs the frame (the "dive into the cloud"). */
     perspective: 1000px;
   }
-  /* Clouds: real atmospheric texture from fractal noise (feTurbulence), not a
-     banding blob. They only appear BETWEEN sections (transitAmt) and
-     drift — we pass through them. mix-blend screen: subtle on light,
-     bright on dark (visible as we descend into shadow). */
+  /* Clouds: a pre-rendered fractal-noise ALPHA texture (see
+     /textures/cloud-soft.webp, baked from feTurbulence at build time) used as
+     a mask over a flat theme tint (--cloud-tint). A plain raster + mask
+     composites on the GPU in every engine — the previous live SVG filter in
+     background-image rendered blank/slow on Firefox and Safari. They only
+     appear BETWEEN sections (transitAmt) and drift — we pass through them. */
   .cloud {
     position: absolute;
     /* Heavily oversized (source 300% of the viewport) so the FAR plane — pushed
@@ -235,13 +297,15 @@ const { nav = [] } = Astro.props;
        rectangle / band), while the near plane blows up to engulf it. Desktop
        dolly only; the mobile/reduced-motion path hides clouds entirely. */
     inset: -100%;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011' numOctaves='4' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
-    /* soft-light: darkens on light (dark shapes over light sections)
-       AND lightens on dark. Depth on both tones. */
-    mix-blend-mode: soft-light;
+    background-color: var(--cloud-tint);
+    -webkit-mask-image: url('/textures/cloud-soft.webp');
+    mask-image: url('/textures/cloud-soft.webp');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: cover;
+    mask-size: cover;
     opacity: 0;
     will-change: transform, opacity, translate;
     /* Slow, continuous drift (independent of scroll): the clouds
@@ -250,8 +314,10 @@ const { nav = [] } = Astro.props;
     animation: cloud-drift-a 38s ease-in-out infinite;
   }
   .cloud--b {
-    background-size: 180% 180%;
-    background-position: 70% 60%;
+    -webkit-mask-size: 180% 180%;
+    mask-size: 180% 180%;
+    -webkit-mask-position: 70% 60%;
+    mask-position: 70% 60%;
     animation: cloud-drift-b 52s ease-in-out infinite;
   }
   @keyframes cloud-drift-a {
@@ -507,8 +573,17 @@ const { nav = [] } = Astro.props;
       discImg.addEventListener('error', () => res(), { once: true });
     });
     const fonts = document.fonts ? document.fonts.ready : Promise.resolve();
+    // Cloud masks: small WebPs, but if one lags the strata would pass blank.
+    const tex = ['/textures/cloud-sharp.webp', '/textures/cloud-soft.webp'].map(
+      (src) =>
+        new Promise<void>((res) => {
+          const i = new Image();
+          i.onload = i.onerror = () => res();
+          i.src = src;
+        }),
+    );
     const cap = new Promise<void>((res) => window.setTimeout(res, 2600));
-    return Promise.race([Promise.all([disc, fonts]), cap]);
+    return Promise.race([Promise.all([disc, fonts, ...tex]), cap]);
   };
 
   if (!reduce) {
@@ -879,6 +954,46 @@ const { nav = [] } = Astro.props;
         duration: 1.4,
         ease: 'power2.in',
       });
+      // 1b. Two cloud strata sweep past (huge -> receding, same trajectory as
+      // the ground): the parallax between the slow disc and the fast near
+      // planes is what sells the altitude. Absolute positions (disc runs 0->1.4).
+      const cloudA = intro.querySelector<HTMLElement>('.intro__cloud--a');
+      const cloudA2 = intro.querySelector<HTMLElement>('.intro__cloud--a2');
+      const cloudB = intro.querySelector<HTMLElement>('.intro__cloud--b');
+      // Same boost as the descent tick: the dark wisps need a touch more
+      // presence on the light paper than the light wisps do on charcoal —
+      // and the intro B settle must match the depth cloud's opacity math.
+      const cloudBoost =
+        document.documentElement.dataset.theme === 'light' ? 1.28 : 1;
+      if (cloudA && cloudA2 && cloudB) {
+        const dolly = document.body.classList.contains('is-dolly');
+        // First stratum: the fast near pass, crossed right at liftoff.
+        tl.set(cloudA, { scale: 4.6, transformOrigin: '50% 60%' }, 0);
+        tl.to(cloudA, { autoAlpha: Math.min(1, 0.62 * cloudBoost), duration: 0.2, ease: 'power1.out' }, 0.06);
+        tl.to(cloudA, { scale: 0.14, yPercent: 10, duration: 0.98, ease: 'power3.in' }, 0.06);
+        tl.to(cloudA, { autoAlpha: 0, duration: 0.3, ease: 'power1.in' }, 0.74);
+        // Second stratum: another near pass, higher up — crossing it while the
+        // cruise layer settles behind is what layers the altitude.
+        tl.set(cloudA2, { scale: 5, transformOrigin: '50% 56%' }, 0);
+        tl.to(cloudA2, { autoAlpha: Math.min(1, 0.55 * cloudBoost), duration: 0.2, ease: 'power1.out' }, 0.72);
+        tl.to(cloudA2, { scale: 0.12, yPercent: 12, duration: 0.85, ease: 'power3.in' }, 0.72);
+        tl.to(cloudA2, { autoAlpha: 0, duration: 0.28, ease: 'power1.in' }, 1.3);
+        // Cruise layer. It arrives huge and DECELERATES
+        // into the exact resting state of the descent depth cloud--b at the
+        // hero dwell (scale 0.55 ~ its translateZ -821 under 1000px
+        // perspective, opacity ~0.32*boost): the overlay crossfade then hands
+        // off to the real ambient cloud beneath — we settle among the clouds.
+        // No dolly (mobile/static: no ambient cloud to hand off to): it fades.
+        tl.set(cloudB, { scale: 3, transformOrigin: '50% 50%' }, 0);
+        tl.to(cloudB, { autoAlpha: Math.min(1, 0.55 * cloudBoost), duration: 0.25, ease: 'power1.out' }, 0.42);
+        if (dolly) {
+          tl.to(cloudB, { scale: 0.55, yPercent: 1.6, duration: 1.15, ease: 'expo.out' }, 0.42);
+          tl.to(cloudB, { autoAlpha: Math.min(1, 0.32 * cloudBoost), duration: 0.6, ease: 'power1.inOut' }, 0.9);
+        } else {
+          tl.to(cloudB, { scale: 0.4, yPercent: 6, duration: 1.05, ease: 'power2.out' }, 0.42);
+          tl.to(cloudB, { autoAlpha: 0, duration: 0.4, ease: 'power1.in' }, 1.15);
+        }
+      }
       // 2. Reveal the hero.
       tl.to(intro, { autoAlpha: 0, duration: 0.6, ease: 'power2.inOut' }, '-=0.2');
       tl.to(
