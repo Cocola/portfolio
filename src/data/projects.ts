@@ -44,7 +44,7 @@ export const projects: Project[] = [
       'fr': 'Redesign UI & design system pour une app B2C iOS/Android',
       'en': 'UI redesign & design system for a B2C iOS/Android app',
     },
-    client: 'PennyPet',
+    client: 'PayShift',
     year: '2025',
     summary: {
       'fr':

@@ -11,17 +11,17 @@ export const journey: JourneyEntry[] = [
   {
     org: 'Méthode Aristote',
     role: { 'fr': 'Founding Design Engineer', 'en': 'Founding Design Engineer' },
-    period: '2025 →',
-    place: 'Biarritz',
+    period: '2026 →',
+    place: 'Remote',
   },
   {
-    org: 'Lizee · PayShft',
+    org: 'Lizee · PayShift',
     role: {
       'fr': 'Product Designer & Frontend',
       'en': 'Product Designer & Frontend',
     },
     period: '2020 – 2025',
-    place: 'Remote',
+    place: 'Remote · Biarritz',
   },
   {
     org: 'BeAPI',
@@ -30,7 +30,7 @@ export const journey: JourneyEntry[] = [
       'en': 'Frontend Manager, head of front-end',
     },
     period: '2014 – 2020',
-    place: 'Paris',
+    place: 'Remote',
   },
   {
     org: 'BeAPI',
