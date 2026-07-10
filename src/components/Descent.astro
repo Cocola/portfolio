@@ -180,7 +180,11 @@ const { nav = [] } = Astro.props;
      structure still reads during a 1-second pass while stretched ~4.6x. */
   .intro__cloud {
     position: absolute;
-    inset: -25%;
+    /* 300% of the viewport (like the descent clouds): the box must stay
+       larger than the frame at the SMALLEST scale it reaches while still
+       visible, on the narrowest portrait screen — otherwise its hard edges
+       sweep across the frame as it recedes (the mobile "misplaced canvas"). */
+    inset: -100%;
     pointer-events: none;
     background-color: var(--cloud-tint);
     -webkit-mask-image: url('/textures/cloud-sharp.webp');
@@ -206,7 +210,6 @@ const { nav = [] } = Astro.props;
      dwell) must be pixel-close for the overlay crossfade to read as the same
      cloud. */
   .intro__cloud--b {
-    inset: -100%;
     -webkit-mask-image: url('/textures/cloud-soft.webp');
     mask-image: url('/textures/cloud-soft.webp');
     -webkit-mask-size: 180% 180%;
@@ -967,16 +970,21 @@ const { nav = [] } = Astro.props;
         document.documentElement.dataset.theme === 'light' ? 1.28 : 1;
       if (cloudA && cloudA2 && cloudB) {
         const dolly = document.body.classList.contains('is-dolly');
+        // Pass strata scales are calibrated to the 300% box: on-screen texture
+        // zoom = box × scale, so 2.3 here ≈ the old 4.6 on a 150% box. End
+        // scales stay ≥0.36 and yPercent small: a 300% box centred on the
+        // frame keeps its edges out of view down to scale 1/3 — below that
+        // the edges sweep across narrow screens (the mobile band bug).
         // First stratum: the fast near pass, crossed right at liftoff.
-        tl.set(cloudA, { scale: 4.6, transformOrigin: '50% 60%' }, 0);
+        tl.set(cloudA, { scale: 2.3, transformOrigin: '50% 50%' }, 0);
         tl.to(cloudA, { autoAlpha: Math.min(1, 0.62 * cloudBoost), duration: 0.2, ease: 'power1.out' }, 0.06);
-        tl.to(cloudA, { scale: 0.14, yPercent: 10, duration: 0.98, ease: 'power3.in' }, 0.06);
+        tl.to(cloudA, { scale: 0.36, yPercent: 4, duration: 0.98, ease: 'power3.in' }, 0.06);
         tl.to(cloudA, { autoAlpha: 0, duration: 0.3, ease: 'power1.in' }, 0.74);
         // Second stratum: another near pass, higher up — crossing it while the
         // cruise layer settles behind is what layers the altitude.
-        tl.set(cloudA2, { scale: 5, transformOrigin: '50% 56%' }, 0);
+        tl.set(cloudA2, { scale: 2.5, transformOrigin: '50% 50%' }, 0);
         tl.to(cloudA2, { autoAlpha: Math.min(1, 0.55 * cloudBoost), duration: 0.2, ease: 'power1.out' }, 0.72);
-        tl.to(cloudA2, { scale: 0.12, yPercent: 12, duration: 0.85, ease: 'power3.in' }, 0.72);
+        tl.to(cloudA2, { scale: 0.36, yPercent: 4, duration: 0.85, ease: 'power3.in' }, 0.72);
         tl.to(cloudA2, { autoAlpha: 0, duration: 0.28, ease: 'power1.in' }, 1.3);
         // Cruise layer. It arrives huge and DECELERATES
         // into the exact resting state of the descent depth cloud--b at the
@@ -990,7 +998,10 @@ const { nav = [] } = Astro.props;
           tl.to(cloudB, { scale: 0.55, yPercent: 1.6, duration: 1.15, ease: 'expo.out' }, 0.42);
           tl.to(cloudB, { autoAlpha: Math.min(1, 0.32 * cloudBoost), duration: 0.6, ease: 'power1.inOut' }, 0.9);
         } else {
-          tl.to(cloudB, { scale: 0.4, yPercent: 6, duration: 1.05, ease: 'power2.out' }, 0.42);
+          // 0.55 floor (like the dolly settle): at 0.4 the 300% box's margins
+          // shrink under the drift + yPercent shifts and its top-left corner
+          // sweeps into narrow portrait screens at ~0.5 opacity.
+          tl.to(cloudB, { scale: 0.55, yPercent: 2, duration: 1.05, ease: 'power2.out' }, 0.42);
           tl.to(cloudB, { autoAlpha: 0, duration: 0.4, ease: 'power1.in' }, 1.15);
         }
       }
