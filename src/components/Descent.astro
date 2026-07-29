@@ -616,6 +616,20 @@ const { nav = [] } = Astro.props;
 
       const DWELL = 2.8; // dwell on each section
       const TRANSIT = 3.4; // transition between two sections (spread out = calmer)
+      // Dead zone at the head of each dwell: scroll that moves the page but
+      // changes NOTHING on screen, so leaving a station costs a deliberate
+      // gesture instead of happening on the first notch. Tuned in pixels of
+      // scroll because that's the unit the feel is judged in.
+      const HOLD_PX = 700;
+      // Fraction of the dwell the dead zone occupies. Depends on the viewport
+      // (the trigger's end scales with innerHeight), so it's recomputed on
+      // refresh. Capped so a very short viewport still leaves room for the
+      // breathing to ease the zoom back in.
+      let holdFrac = 0;
+      const majHold = () => {
+        holdFrac = Math.min(0.8, HOLD_PX / (DWELL * 0.72 * window.innerHeight));
+      };
+      majHold();
       const segs: [number, number, number][] = [];
       for (let i = 0; i < N; i++) {
         segs.push([DWELL, i, i]);
@@ -720,11 +734,19 @@ const { nav = [] } = Astro.props;
             // to leave a clean background while the photo grows.
             if (i === N - 2) opacity = 1 - Math.min(1, k * 2.6);
           }
-          // Breathing: during the dwell, the sharp section drifts very slowly
-          // (1.0 -> 1.05) with the scroll direction (down = zoom in, up =
-          // out). It starts at 1.0 (end of arrival) and ends at 1.05 (start
-          // of transition): the scale curve stays continuous, no jump.
-          if (i === dwellIndex) scale = lerp(1.0, 1.05, dwellT);
+          // Dwell = dead zone, then breathing.
+          // For the first `holdFrac` of the dwell the station is absolutely
+          // frozen at scale 1 (it already has no blur and full opacity here), so
+          // you can keep scrolling and the section stays put — the fall only
+          // resumes once that scroll budget is spent. The breathing (1.0 ->
+          // 1.05) is then squeezed into the tail, so the curve still hands over
+          // to the transition at 1.05 with no jump, and the zoom eases back in
+          // instead of snapping on.
+          if (i === dwellIndex) {
+            const t =
+              dwellT <= holdFrac ? 0 : (dwellT - holdFrac) / (1 - holdFrac);
+            scale = lerp(1.0, 1.05, t);
+          }
           opacity = Math.max(0, opacity);
           sec.style.transform = `scale(${scale})`;
           sec.style.opacity = String(opacity);
@@ -843,6 +865,9 @@ const { nav = [] } = Astro.props;
         invalidateOnRefresh: true,
         onUpdate: (self) => render(self.progress),
       });
+      // The dead zone is a pixel budget but `holdFrac` is a fraction of a dwell
+      // whose pixel length follows innerHeight — so it has to follow a resize.
+      ScrollTrigger.addEventListener('refresh', majHold);
       render(0);
 
       // A11y: inactive sections are visibility:hidden (out of the a11y tree and
