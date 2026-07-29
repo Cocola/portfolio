@@ -68,16 +68,19 @@
      on the light paper. */
   --cloud-tint: oklch(0.42 0.012 70 / 0.6);
 
-  /* --- Accent: the single brand color, a deep wine red (bordeaux) ---
+  /* --- Accent: the single brand color, a warm gold (amber) ---
      The lone exception to the B&W system. Rationed: selective emphasis +
      interactive (CTA / link) hover only. Themed for legibility on --page:
      deep on paper, lightened on charcoal.
      --accent      : emphasis text + hover ink/icon color (on --page)
      --accent-solid: fill for CTA hovers (paired with --accent-ink text)
-     --accent-ink  : near-white text placed on an --accent-solid fill */
-  --accent: oklch(0.46 0.145 25);
-  --accent-solid: oklch(0.44 0.145 25);
-  --accent-ink: oklch(0.968 0.008 80);
+     --accent-ink  : near-white text placed on an --accent-solid fill
+     These are the DEFAULT values, used when no accent has been picked. They are
+     mirrored by [data-accent='ambre'] below so the picked-explicitly case and the
+     nothing-picked case render identically. */
+  --accent: oklch(0.56 0.12 72);
+  --accent-solid: oklch(0.52 0.11 70);
+  --accent-ink: oklch(0.99 0.01 85);
 
   /* --- Typography: contrast of REGISTER (not weight) ---
      Titles = contemporary antiqua, roman, Light, huge (the human,
@@ -174,11 +177,11 @@
   --surface: var(--surface-on-dark);
   --hairline: var(--hairline-on-dark);
   --cloud-tint: oklch(0.93 0.008 80 / 0.5);
-  /* Lightened bordeaux so it pops on charcoal; fill stays deep enough
+  /* Lightened gold so it pops on charcoal; fill stays deep enough
      to keep --accent-ink legible. */
-  --accent: oklch(0.60 0.155 23);
-  --accent-solid: oklch(0.47 0.15 26);
-  --accent-ink: oklch(0.98 0.006 80);
+  --accent: oklch(0.82 0.13 85);
+  --accent-solid: oklch(0.55 0.12 72);
+  --accent-ink: oklch(0.99 0.01 85);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
@@ -189,31 +192,25 @@
     --surface: var(--surface-on-dark);
     --hairline: var(--hairline-on-dark);
     --cloud-tint: oklch(0.93 0.008 80 / 0.5);
-    --accent: oklch(0.60 0.155 23);
-    --accent-solid: oklch(0.47 0.15 26);
-    --accent-ink: oklch(0.98 0.006 80);
+    --accent: oklch(0.82 0.13 85);
+    --accent-solid: oklch(0.55 0.12 72);
+    --accent-ink: oklch(0.99 0.01 85);
   }
 }
 
 /* =====================================================================
-   Selectable accents (the header "theme-color" picker). Bordeaux is the
-   default (defined above). Each alternative overrides the 3 accent tokens,
-   with a dark variant so it stays legible on charcoal. --accent (text) is
-   tuned per theme for contrast on --page; --accent-solid (CTA fills) stays
-   deep so --accent-ink (near-white) always reads on it. The inline pre-paint
-   script sets data-accent from localStorage to avoid a flash.
+   Selectable accents (the header "theme-color" picker). Gold (ambre) is the
+   default, and its values live in :root above.
+   EVERY accent, gold included, also has an explicit [data-accent] block here:
+   the pre-paint script can then simply mirror localStorage onto the attribute
+   without having to know which one is the default. That special case used to be
+   duplicated across three files, and any drift between them showed up as a
+   colour flash on load.
+   Each block overrides the 3 accent tokens, with a dark variant so it stays
+   legible on charcoal. --accent (text) is tuned per theme for contrast on
+   --page; --accent-solid (CTA fills) stays deep so --accent-ink (near-white)
+   always reads on it.
    ===================================================================== */
-:root[data-accent='foret'] {
-  --accent: oklch(0.44 0.1 152);
-  --accent-solid: oklch(0.42 0.1 152);
-  --accent-ink: oklch(0.98 0.02 155);
-}
-:root[data-accent='foret'][data-theme='dark'] {
-  --accent: oklch(0.64 0.12 155);
-  --accent-solid: oklch(0.45 0.11 153);
-  --accent-ink: oklch(0.98 0.02 155);
-}
-
 :root[data-accent='ambre'] {
   --accent: oklch(0.56 0.12 72);
   --accent-solid: oklch(0.52 0.11 70);
@@ -223,4 +220,26 @@
   --accent: oklch(0.82 0.13 85);
   --accent-solid: oklch(0.55 0.12 72);
   --accent-ink: oklch(0.99 0.01 85);
+}
+
+:root[data-accent='bordeaux'] {
+  --accent: oklch(0.46 0.145 25);
+  --accent-solid: oklch(0.44 0.145 25);
+  --accent-ink: oklch(0.968 0.008 80);
+}
+:root[data-accent='bordeaux'][data-theme='dark'] {
+  --accent: oklch(0.60 0.155 23);
+  --accent-solid: oklch(0.47 0.15 26);
+  --accent-ink: oklch(0.98 0.006 80);
+}
+
+:root[data-accent='foret'] {
+  --accent: oklch(0.44 0.1 152);
+  --accent-solid: oklch(0.42 0.1 152);
+  --accent-ink: oklch(0.98 0.02 155);
+}
+:root[data-accent='foret'][data-theme='dark'] {
+  --accent: oklch(0.64 0.12 155);
+  --accent-solid: oklch(0.45 0.11 153);
+  --accent-ink: oklch(0.98 0.02 155);
 }

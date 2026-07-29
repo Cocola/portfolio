@@ -7,18 +7,27 @@ interface Props {
 const { locale } = Astro.props;
 const fr = locale === 'fr';
 
-// Curated accents. `key` drives the [data-accent] token override in tokens.css
-// (bordeaux = default, no attribute). `swatch` is the dot colour shown in the
-// picker (a mid, saturated take that reads in both themes).
+// Curated accents. `key` drives the [data-accent] token override in tokens.css —
+// every accent has an explicit block there, including the default, so nothing
+// here needs to special-case it. `swatch` is the dot colour shown in the picker
+// (a mid, saturated take that reads in both themes).
+// DEFAULT_ACCENT is the single source of truth for "nothing picked yet"; it must
+// match a `key` below and have a [data-accent] block in tokens.css.
+const DEFAULT_ACCENT = 'ambre';
 const accents = [
+  { key: 'ambre', label: fr ? 'Or' : 'Gold', swatch: 'oklch(0.7 0.13 80)' },
   { key: 'bordeaux', label: fr ? 'Bordeaux' : 'Bordeaux', swatch: 'oklch(0.5 0.15 25)' },
   { key: 'foret', label: fr ? 'Forêt' : 'Forest', swatch: 'oklch(0.45 0.1 153)' },
-  { key: 'ambre', label: fr ? 'Ambre' : 'Amber', swatch: 'oklch(0.7 0.13 80)' },
 ];
 const label = fr ? 'Couleur d’accent' : 'Accent colour';
 ---
 
-<div class="accent" data-accent-picker data-open="false">
+<div
+  class="accent"
+  data-accent-picker
+  data-open="false"
+  data-default-accent={DEFAULT_ACCENT}
+>
   <button
     class="accent__toggle"
     type="button"
@@ -37,7 +46,7 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
           class="accent__opt"
           type="button"
           role="menuitemradio"
-          aria-checked={a.key === 'bordeaux' ? 'true' : 'false'}
+          aria-checked={a.key === DEFAULT_ACCENT ? 'true' : 'false'}
           data-accent-value={a.key}
           title={a.label}
           aria-label={a.label}
@@ -236,9 +245,9 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
     };
 
     const apply = (value: string, persist: boolean) => {
-      // Bordeaux is the default: no attribute needed.
-      if (value === 'bordeaux') root.removeAttribute('data-accent');
-      else root.dataset.accent = value;
+      // Every accent has its own [data-accent] block in tokens.css, the default
+      // included, so the attribute is always set — no default to special-case.
+      root.dataset.accent = value;
       markChecked(value);
       if (persist) {
         try {
@@ -248,14 +257,15 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
     };
 
     // Reflect the persisted choice (applied pre-paint by BaseLayout). Fall back
-    // to bordeaux if the stored value is no longer an offered accent, and
-    // re-apply so a stale [data-accent] gets cleaned off <html>.
+    // to the default if the stored value is no longer an offered accent, and
+    // re-apply so a stale [data-accent] gets corrected on <html>.
+    const fallback = picker.dataset.defaultAccent!;
     const keys = opts.map((o) => o.dataset.accentValue);
-    let current = 'bordeaux';
+    let current = fallback;
     try {
-      current = localStorage.getItem(KEY) || 'bordeaux';
+      current = localStorage.getItem(KEY) || fallback;
     } catch {}
-    if (!keys.includes(current)) current = 'bordeaux';
+    if (!keys.includes(current)) current = fallback;
     apply(current, false);
 
     toggle.addEventListener('click', () => setOpen(!isOpen()));

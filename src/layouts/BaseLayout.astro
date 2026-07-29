@@ -89,10 +89,12 @@ const schemas = [person, ...jsonLd];
               ? 'dark'
               : 'light');
           document.documentElement.dataset.theme = theme;
-          // Accent choice (bordeaux = default, no attribute).
+          // Accent choice. Mirrored as-is: every accent has its own
+          // [data-accent] block in tokens.css, so this doesn't need to know which
+          // one is the default. Nothing stored -> no attribute -> the :root
+          // defaults (gold) apply. AccentPicker re-applies and validates later.
           const accent = localStorage.getItem('nf-accent');
-          if (accent && accent !== 'bordeaux')
-            document.documentElement.dataset.accent = accent;
+          if (accent) document.documentElement.dataset.accent = accent;
         } catch (_) {
           document.documentElement.dataset.theme = 'light';
         }
