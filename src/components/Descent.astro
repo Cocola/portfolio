@@ -608,6 +608,25 @@ const { nav = [] } = Astro.props;
 
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
+    // Size leaves and re-enters a station from REST.
+    // The transition's progress is linear in scroll, so feeding it straight into
+    // the scale meant the zoom hit full speed on the very first frame after the
+    // frozen dwell — ~12% of scale in one frame from a standstill, a visible
+    // lurch now that a settled station really is still.
+    // This is linear with a short quadratic lead-in: zero rate at 0, then it
+    // matches the linear ramp's value AND slope at the handover, so it only ever
+    // lags by LEAD/2 (0.06). By the time a section has faded out the scale is
+    // within ~7% of before — the fall's character is unchanged, it just starts
+    // from rest instead of snapping into motion.
+    // Applied to scale and blur only. The opacities stay linear on purpose: the
+    // Journey-fades-out / landing-fades-in handover is tuned to the thousandth
+    // (landing appears at k 0.62, Journey is gone by 0.615) to keep the photo
+    // from ever reading as a rectangle over content, and easing them would pull
+    // those two apart.
+    const LEAD = 0.12;
+    const softStart = (k: number) =>
+      k <= LEAD ? (k * k) / (2 * LEAD) : k - LEAD / 2;
+
     // ---- Descent (dolly) ----
     if (big && descent && stage && sections.length > 1) {
       descent.classList.add('is-dolly');
@@ -665,8 +684,10 @@ const { nav = [] } = Astro.props;
       // when the section is SETTLED (during its dwell), with a slight stagger on
       // the dwell progress (dwellT) — never during arrival. On reverse
       // scroll, same values = no re-trigger, no flicker.
+      // (.hero__* entries are inert here — the hero is i=0, excluded below — but
+      // kept so the list reads as the full set of revealable blocks.)
       const REVEAL =
-        '.hero__role, .hero__title, .hero__actions, .skills__head, .family, ' +
+        '.hero__role, .hero__title, .skills__head, .family, ' +
         '.work__head, .project, .about__bio, .journey__item, .recos, ' +
         '.landing__mark, .landing__kicker, .landing__title, .landing__lead, ' +
         '.landing__links, .landing__actions, .landing__credit';
@@ -714,24 +735,26 @@ const { nav = [] } = Astro.props;
             // while growing over an ALREADY clean background (charcoal/paper) -> the
             // photo blends into the background, never a rectangle over content.
             const k = Math.min(1, -p);
-            scale = lerp(1, 0.01, k);
+            scale = lerp(1, 0.01, softStart(k));
             opacity = Math.min(1, Math.max(0, (0.62 - k) / 0.5));
-            blur = lerp(0, 4, k);
+            blur = lerp(0, 4, softStart(k));
           } else if (p <= 0) {
             const k = Math.min(1, -p);
-            scale = lerp(1, 0.5, k);
+            // softStart on the approach too: k reaches 0 on arrival, so the
+            // section decelerates INTO the frozen dwell instead of stopping dead.
+            scale = lerp(1, 0.5, softStart(k));
             opacity = 1 - Math.min(1, k * 1.5);
-            blur = lerp(0, 7, k);
+            blur = lerp(0, 7, softStart(k));
           } else {
             const k = Math.min(1, p);
             // Restarts from exactly 1 — the frozen dwell's scale — so the curve
             // is continuous and leaving a station shows no 5% jump.
-            scale = lerp(1.0, 9, k);
+            scale = lerp(1.0, 9, softStart(k));
             opacity = 1 - Math.min(1, k * 1.4);
             // Blur is the dominant GPU fill cost here (a full section scaled up
             // to 9x): kept low so the descent holds 60fps on integrated/pressured
             // GPUs. The fast opacity fade hides the reduced radius.
-            blur = lerp(0, 8, k);
+            blur = lerp(0, 8, softStart(k));
             // The section before the landing (Journey) fades out EARLIER
             // to leave a clean background while the photo grows.
             if (i === N - 2) opacity = 1 - Math.min(1, k * 2.6);
@@ -932,8 +955,16 @@ const { nav = [] } = Astro.props;
     // ---- Intro "from the end" (takeoff) ----
     const intro = document.querySelector<HTMLElement>('[data-intro]');
     const media = intro?.querySelector<HTMLElement>('.intro__media');
+    // `:first-of-type`, NOT `:first-child`: the stage's first child is
+    // <div class="depth">, so `section:first-child` matched nothing at all and
+    // this staggered reveal silently never ran (two "GSAP target not found"
+    // warnings were the only trace).
+    // The scroll cue is deliberately left out: `.hero__scroll-arrow` is already
+    // driven by the `hero-bob` CSS keyframes, and GSAP writing `transform` on it
+    // would fight them.
+    const heroSection = '.descent__stage > section:first-of-type';
     const heroBits = gsap.utils.toArray<HTMLElement>(
-      '.descent__stage > section:first-child .hero__role, .descent__stage > section:first-child h1, .descent__stage > section:first-child .hero__actions',
+      `${heroSection} .hero__role, ${heroSection} h1`,
     );
 
     // Once per session: the takeoff only plays on the first landing. Coming
