@@ -24,6 +24,5 @@ pnpm-debug.log*
 .idea/
 .vercel
 
-# contexte design local (impeccable) — pas destiné au repo public
-PRODUCT.md
-DESIGN.md
+# état de travail de l'outil de revue design (critiques horodatées, cache)
+.impeccable/

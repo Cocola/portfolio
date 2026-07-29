@@ -1,43 +1,52 @@
-# Astro Starter Kit: Minimal
+# Nicolas Fiascaro
+
+Design Engineer. Je conçois et développe la couche produit, de la recherche au
+code en production. Remote, Pays Basque.
+
+## En ce moment
+
+Founding Design Engineer chez **Méthode Aristote** (EdTech IA) — design system,
+outillage design-to-code, interfaces produit.
+
+## Ce que je fais
+
+- **Design** — user research, product design, prototypage, design systems
+- **Engineering** — frontend, web performance, animation et micro-interactions
+- **Craft** — accessibilité, design engineering
+
+## Parcours
+
+| Période     | Où               | Rôle                                      |
+| :---------- | :--------------- | :---------------------------------------- |
+| 2026 →      | Méthode Aristote | Founding Design Engineer                  |
+| 2020 – 2025 | Lizee · PayShift | Product Designer & Frontend               |
+| 2014 – 2020 | BeAPI            | Frontend Manager, directeur du pôle front |
+| 2010 – 2014 | BeAPI            | Web designer / développeur                |
+
+## Ce dépôt
+
+Mon portfolio : [nicolas-fiascaro.com](https://www.nicolas-fiascaro.com).
+Astro statique, bilingue FR/EN, Vercel.
+
+Le concept est une descente aérienne : on décolle du sol au chargement, puis le
+scroll fait tomber de section en section. Mobile, petits écrans et
+`prefers-reduced-motion` reçoivent un flux statique.
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev      # localhost:4321
+npm run build
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+La scène est dans `src/components/Descent.astro` (GSAP ScrollTrigger + Lenis).
 
-## 🚀 Project Structure
+## Méthode
 
-Inside of your Astro project, you'll see the following folders and files:
+Co-construit avec [Claude Code](https://claude.com/claude-code), revu avec
+[impeccable](https://impeccable.style). Positionnement et principes de design
+dans [PRODUCT.md](PRODUCT.md).
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## Liens
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- [nicolas-fiascaro.com](https://www.nicolas-fiascaro.com)
+- [LinkedIn](https://www.linkedin.com/in/nicolas-fiascaro/)
