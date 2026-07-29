@@ -523,9 +523,12 @@ const { nav = [] } = Astro.props;
   .descent.is-dolly :global(.project__summary) {
     display: none;
   }
-  /* Arm the projects hover preview only when the section is the sharp, settled
-     station — never while it's still flying toward the camera. */
-  .descent.is-dolly :global(#work:not([data-settled]) .work__list) {
+  /* Arm the projects hover preview only once the station is settled AND its
+     staggered reveal has fully landed — never while it's still flying toward the
+     camera, and never while the rows are still fading in (data-settled alone
+     fires at the start of the dwell, so they used to accept a hover at 20%
+     opacity). */
+  .descent.is-dolly :global(#work:not([data-revealed]) .work__list) {
     pointer-events: none;
   }
   /* The image backdrop blooms in only once the station has settled, so it never
@@ -721,6 +724,7 @@ const { nav = [] } = Astro.props;
       });
       let activeTick = -1;
       let settledIndex = -1;
+      let revealedIndex = -1;
       let headerTucked = false;
 
       const render = (progress: number) => {
@@ -812,13 +816,32 @@ const { nav = [] } = Astro.props;
           activeTick = active;
         }
         // Mark the settled (snapped) station: only during its dwell is the
-        // section sharp and readable. Interactive overlays (the projects hover
-        // preview) arm off this, so nothing fires while a section is still
-        // flying in (|p| < 0.5 but not yet settled).
+        // section sharp and readable. Ambient decoration arms off this, so
+        // nothing shows while a section is still flying in (|p| < 0.5 but not
+        // yet settled).
         if (dwellIndex !== settledIndex) {
           if (settledIndex >= 0) sections[settledIndex]?.removeAttribute('data-settled');
           if (dwellIndex >= 0) sections[dwellIndex]?.setAttribute('data-settled', '');
           settledIndex = dwellIndex;
+        }
+        // Then mark the FULLY REVEALED station. `data-settled` lands at the very
+        // start of the dwell, while the staggered reveal is still running — the
+        // projects were already hoverable at 20% opacity. Interactive overlays
+        // gate off this instead, so a hover can only be picked up once the last
+        // element of the cascade has landed. Sections with nothing to reveal are
+        // revealed on arrival.
+        const revealCount = dwellIndex >= 0 ? revealEls[dwellIndex].length : 0;
+        const revealEnd = revealCount
+          ? (revealCount - 1) * REVEAL_STEP + REVEAL_RAMP
+          : 0;
+        const revealedNow =
+          dwellIndex >= 0 && dwellT >= revealEnd ? dwellIndex : -1;
+        if (revealedNow !== revealedIndex) {
+          if (revealedIndex >= 0)
+            sections[revealedIndex]?.removeAttribute('data-revealed');
+          if (revealedNow >= 0)
+            sections[revealedNow]?.setAttribute('data-revealed', '');
+          revealedIndex = revealedNow;
         }
         // The header tucks up as the landing approaches:
         // the final screen (Nicolas Fiascaro signature) stands alone, no chrome.

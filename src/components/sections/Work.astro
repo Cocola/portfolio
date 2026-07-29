@@ -334,10 +334,11 @@ const previews = items.filter((p) => p.hero);
     };
     section.addEventListener('pointerleave', rest);
 
-    // The station's list pointer-events are gated on `data-settled`; if it flies
-    // away mid-hover no pointerleave fires, so reset off the attribute too.
+    // The list's pointer-events are gated on `data-revealed` (settled AND the
+    // reveal finished); if the station flies away mid-hover no pointerleave
+    // fires, so reset off that same attribute.
     new MutationObserver(() => {
-      if (!section.hasAttribute('data-settled')) rest();
-    }).observe(section, { attributes: true, attributeFilter: ['data-settled'] });
+      if (!section.hasAttribute('data-revealed')) rest();
+    }).observe(section, { attributes: true, attributeFilter: ['data-revealed'] });
   }
 </script>
