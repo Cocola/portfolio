@@ -6,6 +6,14 @@
 @import './fonts.css';
 @import '@fontsource-variable/geist-mono';
 @import './tokens.css';
+/* Lenis' own stylesheet (the descent's smooth scroll, see Descent.astro).
+   `stop()` calls preventDefault on wheel/touch, but the keyboard (space,
+   PageDown) and scrollbar drags rely on `.lenis-stopped { overflow: clip }`
+   from this file — without it those two paths scroll the document behind the
+   intro overlay, and `start()` + ScrollTrigger.refresh() then resume at a
+   non-zero offset. Its `html.lenis body { height: auto }` doesn't collide with
+   our `min-height: 100dvh`. */
+@import 'lenis/dist/lenis.css';
 
 /* --- Reset --- */
 *,

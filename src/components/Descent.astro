@@ -927,7 +927,12 @@ const { nav = [] } = Astro.props;
         sessionStorage.setItem('nf-intro', '1');
       } catch {}
       document.body.classList.add('is-intro');
-      window.scrollTo(0, 0);
+      // `behavior: 'instant'` is required: the legacy two-argument form honours
+      // the computed `scroll-behavior` (smooth, set globally), so it would
+      // ANIMATE the reset behind the intro overlay. Inert today — scroll
+      // restoration is manual, so we already start at 0 — but a one-word guard
+      // against that changing.
+      window.scrollTo({ top: 0, behavior: 'instant' });
       lenis.stop();
 
       const finish = () => {

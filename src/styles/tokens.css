@@ -155,6 +155,10 @@
   /* --- Motion --- */
   --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* For motion that goes and comes back on screen rather than entering or
+     exiting — the hero scroll cue's bob. Was referenced before it existed, so
+     the weak built-in ease-in-out was silently taking over. */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --dur-fast: 180ms;
   --dur-base: 320ms;
   --dur-slow: 620ms;
