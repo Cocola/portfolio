@@ -614,15 +614,24 @@ const { nav = [] } = Astro.props;
       document.body.classList.add('is-dolly');
       const N = sections.length;
 
-      // A settled station is FROZEN — see the dwell note in render(). Its length
-      // is the scroll budget for "text reveals, then you can keep scrolling and
-      // nothing moves": the staggered reveal eats the first part (it ends at
-      // dwellT = (n-1)*0.05 + 0.22, so 0.37 on Skills up to 0.57 on Projects,
-      // which has 8 elements) and everything after it is dead scroll. At 2.8 the
-      // dwell is ~1620px, leaving ~700px frozen on the busiest section and
-      // ~1020px on the lightest. Raise DWELL to buy more dead scroll.
-      const DWELL = 2.8; // dwell on each section
+      // A settled station is FROZEN — see the dwell note in render(). DWELL is
+      // the scroll budget for "the text reveals, then you can keep scrolling and
+      // nothing moves at all". The staggered reveal eats the first slice of it
+      // and every pixel after that is dead scroll.
+      //
+      // The two are coupled: the reveal is timed in FRACTIONS of the dwell, so
+      // raising DWELL alone would also stretch the reveal and make the text
+      // crawl in. REVEAL_STEP/REVEAL_RAMP are therefore scaled down by the same
+      // factor, which keeps the reveal at its current length in pixels and hands
+      // the whole gain to the freeze.
+      const DWELL = 3.8; // dwell on each section
       const TRANSIT = 3.4; // transition between two sections (spread out = calmer)
+      // Reveal cadence, as fractions of a dwell. The last element of a section
+      // lands at (n - 1) * REVEAL_STEP + REVEAL_RAMP; everything past that point
+      // is frozen. Worst case is Projects with 8 elements (~0.41), so well over
+      // half the dwell stays dead even there.
+      const REVEAL_STEP = 0.037; // between two elements
+      const REVEAL_RAMP = 0.162; // for one element to go from hidden to landed
       const segs: [number, number, number][] = [];
       for (let i = 0; i < N; i++) {
         segs.push([DWELL, i, i]);
@@ -753,7 +762,10 @@ const { nav = [] } = Astro.props;
             for (let k = 0; k < els.length; k++) {
               let local: number;
               if (i === dwellIndex)
-                local = Math.min(1, Math.max(0, (dwellT - k * 0.05) / 0.22));
+                local = Math.min(
+                  1,
+                  Math.max(0, (dwellT - k * REVEAL_STEP) / REVEAL_RAMP),
+                );
               else local = p > 0 ? 1 : 0;
               els[k].style.opacity = String(local);
               els[k].style.transform = `translateY(${((1 - local) * 22).toFixed(2)}px)`;
