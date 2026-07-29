@@ -76,8 +76,12 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
       opacity var(--dur-fast) var(--ease-out-quart),
       transform var(--dur-fast) var(--ease-out-quart);
   }
-  .accent__toggle:hover {
-    transform: scale(1.1);
+  /* Gated on a fine pointer: on touch the sticky :hover would leave the dot
+     enlarged after the tap. */
+  @media (hover: hover) and (pointer: fine) {
+    .accent__toggle:hover {
+      transform: scale(1.1);
+    }
   }
   .accent[data-open='true'] .accent__toggle {
     opacity: 0;
@@ -113,17 +117,17 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
     transform: translateY(-50%) scale(0.82);
     transform-origin: left center;
     transition:
-      opacity var(--dur-base) var(--ease-out-quart),
-      transform var(--dur-base) var(--ease-out-expo),
-      visibility 0s linear var(--dur-base);
+      opacity var(--dur-fast) var(--ease-out-quart),
+      transform var(--dur-fast) var(--ease-out-expo),
+      visibility 0s linear var(--dur-fast);
   }
   .accent[data-open='true'] .accent__menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(-50%) scale(1);
     transition:
-      opacity var(--dur-base) var(--ease-out-quart),
-      transform var(--dur-base) var(--ease-out-expo),
+      opacity var(--dur-fast) var(--ease-out-quart),
+      transform var(--dur-fast) var(--ease-out-expo),
       visibility 0s;
   }
 
@@ -131,12 +135,13 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
     inline-size: 20px;
     block-size: 20px;
     border-radius: var(--radius-pill);
-    /* staggered entrance */
+    /* Staggered entrance. The floor is 0.9, not near-zero: a 20px dot born at
+       6px reads as appearing from nothing. */
     opacity: 0;
-    transform: scale(0.3);
+    transform: scale(0.9);
     transition:
-      opacity var(--dur-base) var(--ease-out-quart),
-      transform var(--dur-base) var(--ease-out-expo);
+      opacity var(--dur-fast) var(--ease-out-quart),
+      transform var(--dur-fast) var(--ease-out-expo);
   }
   .accent__opt .accent__dot {
     transition: transform var(--dur-fast) var(--ease-out-quart);
@@ -145,7 +150,8 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
     opacity: 1;
     transform: none;
   }
-  /* Reveal left -> right so the pill reads as growing out of the toggle. */
+  /* Reveal left -> right so the pill reads as growing out of the toggle.
+     30ms steps: the last dot lands under 300ms, inside the dropdown budget. */
   .accent[data-open='true'] .accent__opt:nth-child(1) {
     transition-delay: 0.02s;
   }
@@ -155,12 +161,13 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
   .accent[data-open='true'] .accent__opt:nth-child(3) {
     transition-delay: 0.08s;
   }
-  .accent[data-open='true'] .accent__opt:nth-child(4) {
-    transition-delay: 0.11s;
-  }
 
-  .accent__opt:hover .accent__dot {
-    transform: scale(1.14);
+  /* Gated on a fine pointer: on touch the sticky :hover would leave the picked
+     dot enlarged after the tap. */
+  @media (hover: hover) and (pointer: fine) {
+    .accent__opt:hover .accent__dot {
+      transform: scale(1.14);
+    }
   }
   /* Selected: bigger + a halo in the dot's OWN colour (no grey border). */
   .accent__opt[aria-checked='true'] .accent__dot {
@@ -170,13 +177,38 @@ const label = fr ? 'Couleur d’accent' : 'Accent colour';
       0 0 0 3.5px var(--sw);
   }
 
+  /* Reduced motion = gentler, not zero. The fade is what tells you the menu
+     opened, so it stays; only the scaling movement goes. The `visibility` leg
+     has to stay too, or the close would snap before the fade-out is seen.
+     Delays go: a stagger with no movement left to stagger is just latency. */
   @media (prefers-reduced-motion: reduce) {
-    .accent__toggle,
-    .accent__menu,
-    .accent__opt,
-    .accent__dot {
-      transition-duration: 0.01ms !important;
-      transition-delay: 0s !important;
+    .accent__toggle {
+      transition: opacity var(--dur-fast) var(--ease-out-quart);
+    }
+    .accent__menu {
+      transform: translateY(-50%);
+      transition:
+        opacity var(--dur-fast) var(--ease-out-quart),
+        visibility 0s linear var(--dur-fast);
+    }
+    .accent[data-open='true'] .accent__menu {
+      transform: translateY(-50%);
+      transition:
+        opacity var(--dur-fast) var(--ease-out-quart),
+        visibility 0s;
+    }
+    .accent__opt {
+      transform: none;
+      transition: opacity var(--dur-fast) var(--ease-out-quart);
+    }
+    .accent[data-open='true'] .accent__toggle {
+      transform: none;
+    }
+    .accent[data-open='true'] .accent__opt {
+      transition-delay: 0s;
+    }
+    .accent__opt .accent__dot {
+      transition: none;
     }
   }
 </style>

@@ -48,11 +48,15 @@ const target = external ? '_blank' : undefined;
       border-color var(--dur-fast) var(--ease-out-quart),
       color var(--dur-fast) var(--ease-out-quart);
   }
-  .btn:hover {
-    transform: translateY(-2px);
-  }
-  .btn:active {
-    transform: translateY(0);
+  /* Gated on a fine pointer: on touch, tapping fires a sticky :hover and the
+     button would stay lifted after the finger leaves. */
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
   }
 
   /* Monochrome at rest; the accent (bordeaux) surfaces on hover. */

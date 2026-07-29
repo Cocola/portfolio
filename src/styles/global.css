@@ -41,9 +41,21 @@ body {
   font-synthesis: none;
   background-color: var(--page);
   color: var(--ink);
-  transition:
-    background-color var(--dur-base) var(--ease-out-quart),
-    color var(--dur-base) var(--ease-out-quart);
+}
+
+/* Theme flip: one clean frame.
+   The body used to crossfade its background over 320ms while the hairlines,
+   scrims and color-mix(--page) gradients switched instantly — the flip read as
+   a glitch. Cutting the body transition isn't enough on its own: a dozen rules
+   carry `transition: color` for their hovers (links, .project__num,
+   .case__foot-dir, .altimeter__tick…) and would keep trailing behind. So we
+   suppress every transition for the duration of one frame instead, which leaves
+   those hover transitions intact the rest of the time. The class is set and
+   cleared around the theme write in Header.astro. */
+html.nf-theme-switching *,
+html.nf-theme-switching *::before,
+html.nf-theme-switching *::after {
+  transition: none !important;
 }
 
 /* Solid theme background behind all content (a single tint, light or night). */

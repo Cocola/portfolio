@@ -155,8 +155,12 @@ const fr = locale === 'fr';
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }
-  .recos__link:hover .recos__arrow {
-    transform: translateX(0.3em);
+  /* Gated on a fine pointer: on touch the sticky :hover would leave the arrow
+     shifted after the tap. */
+  @media (hover: hover) and (pointer: fine) {
+    .recos__link:hover .recos__arrow {
+      transform: translateX(0.3em);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .recos__link:hover .recos__arrow {

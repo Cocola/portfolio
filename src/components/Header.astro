@@ -170,9 +170,11 @@ const home = localizedPath(locale, '/');
   .site-header__theme:hover {
     opacity: 1;
   }
+  /* 180ms, not 320ms: this is the response to a click, and a half-disc flipping
+     over is legible well inside the press-feedback budget. */
   .site-header__theme-icon {
     display: block;
-    transition: transform var(--dur-base) var(--ease-out-expo);
+    transition: transform var(--dur-fast) var(--ease-out-expo);
   }
   :global(html[data-theme='dark']) .site-header__theme-icon {
     transform: rotate(180deg);
@@ -218,7 +220,17 @@ const home = localizedPath(locale, '/');
 
   btn?.addEventListener('click', () => {
     const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    // Suppress every transition for exactly one frame so the whole page flips
+    // together (see the .nf-theme-switching rule in global.css). Forcing a
+    // style read commits the class before the theme write; the rAF pair clears
+    // it only after the new colours have painted, so the hover transitions are
+    // back by the time the pointer can reach anything.
+    root.classList.add('nf-theme-switching');
+    void root.offsetHeight;
     root.dataset.theme = next;
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => root.classList.remove('nf-theme-switching')),
+    );
     try {
       localStorage.setItem(KEY, next);
     } catch {}
