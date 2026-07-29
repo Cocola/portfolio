@@ -614,22 +614,15 @@ const { nav = [] } = Astro.props;
       document.body.classList.add('is-dolly');
       const N = sections.length;
 
+      // A settled station is FROZEN — see the dwell note in render(). Its length
+      // is the scroll budget for "text reveals, then you can keep scrolling and
+      // nothing moves": the staggered reveal eats the first part (it ends at
+      // dwellT = (n-1)*0.05 + 0.22, so 0.37 on Skills up to 0.57 on Projects,
+      // which has 8 elements) and everything after it is dead scroll. At 2.8 the
+      // dwell is ~1620px, leaving ~700px frozen on the busiest section and
+      // ~1020px on the lightest. Raise DWELL to buy more dead scroll.
       const DWELL = 2.8; // dwell on each section
       const TRANSIT = 3.4; // transition between two sections (spread out = calmer)
-      // Dead zone at the head of each dwell: scroll that moves the page but
-      // changes NOTHING on screen, so leaving a station costs a deliberate
-      // gesture instead of happening on the first notch. Tuned in pixels of
-      // scroll because that's the unit the feel is judged in.
-      const HOLD_PX = 700;
-      // Fraction of the dwell the dead zone occupies. Depends on the viewport
-      // (the trigger's end scales with innerHeight), so it's recomputed on
-      // refresh. Capped so a very short viewport still leaves room for the
-      // breathing to ease the zoom back in.
-      let holdFrac = 0;
-      const majHold = () => {
-        holdFrac = Math.min(0.8, HOLD_PX / (DWELL * 0.72 * window.innerHeight));
-      };
-      majHold();
       const segs: [number, number, number][] = [];
       for (let i = 0; i < N; i++) {
         segs.push([DWELL, i, i]);
@@ -722,9 +715,9 @@ const { nav = [] } = Astro.props;
             blur = lerp(0, 7, k);
           } else {
             const k = Math.min(1, p);
-            // Restarts from 1.05 (= end of the dwell breathing) to continue
-            // seamlessly: a single continuous zoom accelerating toward the camera.
-            scale = lerp(1.05, 9, k);
+            // Restarts from exactly 1 — the frozen dwell's scale — so the curve
+            // is continuous and leaving a station shows no 5% jump.
+            scale = lerp(1.0, 9, k);
             opacity = 1 - Math.min(1, k * 1.4);
             // Blur is the dominant GPU fill cost here (a full section scaled up
             // to 9x): kept low so the descent holds 60fps on integrated/pressured
@@ -734,19 +727,16 @@ const { nav = [] } = Astro.props;
             // to leave a clean background while the photo grows.
             if (i === N - 2) opacity = 1 - Math.min(1, k * 2.6);
           }
-          // Dwell = dead zone, then breathing.
-          // For the first `holdFrac` of the dwell the station is absolutely
-          // frozen at scale 1 (it already has no blur and full opacity here), so
-          // you can keep scrolling and the section stays put — the fall only
-          // resumes once that scroll budget is spent. The breathing (1.0 ->
-          // 1.05) is then squeezed into the tail, so the curve still hands over
-          // to the transition at 1.05 with no jump, and the zoom eases back in
-          // instead of snapping on.
-          if (i === dwellIndex) {
-            const t =
-              dwellT <= holdFrac ? 0 : (dwellT - holdFrac) / (1 - holdFrac);
-            scale = lerp(1.0, 1.05, t);
-          }
+          // A settled station is FROZEN for its whole dwell: scale stays exactly
+          // 1 (it already has no blur and full opacity here), so once the
+          // staggered reveal below has played you can keep scrolling and NOTHING
+          // moves — the fall only resumes when the dwell is spent.
+          // There used to be a slow "breathing" zoom (1.0 -> 1.05) across the
+          // dwell. It meant a station was never actually at rest, and since the
+          // reveal is driven by the same dwellT, the zoom picked up the instant
+          // the text finished landing — so a station read as "displayed, then
+          // immediately gone". The dwell's own `p == 0` already yields scale 1,
+          // so freezing it is simply not overriding it.
           opacity = Math.max(0, opacity);
           sec.style.transform = `scale(${scale})`;
           sec.style.opacity = String(opacity);
@@ -865,9 +855,6 @@ const { nav = [] } = Astro.props;
         invalidateOnRefresh: true,
         onUpdate: (self) => render(self.progress),
       });
-      // The dead zone is a pixel budget but `holdFrac` is a fraction of a dwell
-      // whose pixel length follows innerHeight — so it has to follow a resize.
-      ScrollTrigger.addEventListener('refresh', majHold);
       render(0);
 
       // A11y: inactive sections are visibility:hidden (out of the a11y tree and
