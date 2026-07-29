@@ -102,10 +102,9 @@ const previews = items.filter((p) => p.hero);
       opacity var(--dur-slow, 0.45s) var(--ease-out-quart),
       filter var(--dur-slow, 0.45s) var(--ease-out-quart);
   }
-  /* Ambient at rest; full presence + a hint of colour on hover. */
-  .work__bg-img.is-active {
-    opacity: 0.5;
-  }
+  /* Only the hovered project's image, and only while hovering: nothing is shown
+     at rest. `is-active` is never set outside a hover, so this single rule covers
+     it — moving between rows just moves the class and the two crossfade. */
   .work__bg.is-hovering .work__bg-img.is-active {
     opacity: 1;
     filter: grayscale(0.35);
@@ -262,11 +261,10 @@ const previews = items.filter((p) => p.hero);
       const id = el.getAttribute('data-project');
       if (id) imgs.set(id, el);
     }
-    // Ambient backdrop at rest = the first project that has an image.
-    const first = bg.querySelector<HTMLElement>('.work__bg-img');
-    const firstId = first?.getAttribute('data-project') ?? null;
-    let activeImg: HTMLElement | null = first ?? null;
-    activeImg?.classList.add('is-active');
+    // Nothing at rest: the backdrop is a response to hovering a row, not ambient
+    // decoration. Pre-activating the first project's image read as a permanent
+    // default hover.
+    let activeImg: HTMLElement | null = null;
 
     const setActive = (id: string | null) => {
       const el = id ? (imgs.get(id) ?? null) : null;
@@ -321,14 +319,17 @@ const previews = items.filter((p) => p.hero);
 
     for (const row of list.querySelectorAll<HTMLElement>('.project__link')) {
       row.addEventListener('pointerenter', () => {
-        bg.classList.add('is-hovering');
         setActive(row.getAttribute('data-project'));
+        // Only raise the backdrop when this project actually HAS an image — not
+        // every project has a case-study hero yet. The container carries the
+        // scrim, so showing it imageless would be a bare rectangle.
+        bg.classList.toggle('is-hovering', !!activeImg);
       });
     }
 
     const rest = () => {
       bg.classList.remove('is-hovering');
-      setActive(firstId);
+      setActive(null);
       tRx = tRy = tPx = tPy = 0;
       kick();
     };

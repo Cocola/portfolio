@@ -531,9 +531,13 @@ const { nav = [] } = Astro.props;
   .descent.is-dolly :global(#work:not([data-revealed]) .work__list) {
     pointer-events: none;
   }
-  /* The image backdrop blooms in only once the station has settled, so it never
-     flashes as a rectangle while flying through the sky. */
-  .descent.is-dolly :global(#work[data-settled] .work__bg) {
+  /* The image backdrop blooms in only while a project row is actually hovered —
+     never at rest, and so never while flying through the sky either. It has to be
+     the CONTAINER that fades, not just the image: .work__bg carries a
+     page-tinted scrim in ::after, which on its own would read as exactly the
+     rectangle the rest of this scene avoids. Hovering can't happen before the
+     reveal has landed, since pointer-events are gated on [data-revealed] above. */
+  .descent.is-dolly :global(#work .work__bg.is-hovering) {
     opacity: 1;
   }
   /* Journey */
