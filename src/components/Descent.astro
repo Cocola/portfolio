@@ -24,7 +24,7 @@ const { nav = [] } = Astro.props;
     try {
       var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
       var seen = sessionStorage.getItem('nf-intro') === '1';
-      if (!reduce && !seen) {
+      if (!reduce && !seen && !location.hash) {
         document.documentElement.classList.add('nf-loading');
         // Failsafe: the header is hidden while nf-loading is set, so if the main
         // script never runs (JS error), clear it after a few seconds so the
@@ -964,11 +964,33 @@ const { nav = [] } = Astro.props;
         });
       }
 
-      window.addEventListener('load', () => ScrollTrigger.refresh());
+      // Legacy page redirects now land on sections of the home page. Native
+      // fragment scrolling cannot locate a section inside the pinned stage.
+      const jumpToHash = () => {
+        const idx = idToIndex.get(window.location.hash.slice(1));
+        if (idx === undefined) return;
+        const p = tickProgress(idx);
+        lenis.scrollTo(st.start + p * (st.end - st.start), {
+          immediate: true,
+          force: true,
+        });
+        focusSection(idx);
+      };
+      const refreshAndJump = () => {
+        ScrollTrigger.refresh();
+        // Pinning changes the document height. Update Lenis before it clamps
+        // the destination against the shorter, pre-pin scroll limit.
+        lenis.resize();
+        jumpToHash();
+      };
+      if (document.readyState === 'complete') refreshAndJump();
+      else window.addEventListener('load', refreshAndJump, { once: true });
+      window.addEventListener('hashchange', jumpToHash);
     } else if (descent && sections.length > 1) {
-      // Small screen: soft depth reveal (no pin).
+      // Small screen: soft depth reveal (no pin). Keep a direct-link target
+      // at its natural size so native fragment scrolling aligns it correctly.
       sections.forEach((sec, i) => {
-        if (i === 0) return;
+        if (i === 0 || `#${sec.id}` === window.location.hash) return;
         gsap.from(sec, {
           opacity: 0,
           scale: 0.86,
@@ -1004,7 +1026,9 @@ const { nav = [] } = Astro.props;
         return false;
       }
     })();
-    if (intro && media && !seenIntro) {
+    // A direct section link should reach its content without the takeoff
+    // resetting its scroll position (also applies to the static/mobile flow).
+    if (intro && media && !seenIntro && !window.location.hash) {
       try {
         sessionStorage.setItem('nf-intro', '1');
       } catch {}
@@ -1116,5 +1140,20 @@ const { nav = [] } = Astro.props;
       // Intro already seen this session: remove the overlay.
       intro.remove();
     }
+  }
+
+  // Re-align static/mobile deep links after layout is ready, including on
+  // reloads where manual scroll restoration otherwise leaves them at the top.
+  const hashTarget = document.getElementById(window.location.hash.slice(1));
+  if (hashTarget?.matches('.descent__stage > section') && !document.body.classList.contains('is-dolly')) {
+    const alignToSection = () => {
+      document.fonts.ready.then(() => {
+        hashTarget.scrollIntoView({ behavior: 'instant', block: 'start' });
+        hashTarget.setAttribute('tabindex', '-1');
+        hashTarget.focus({ preventScroll: true });
+      });
+    };
+    if (document.readyState === 'complete') alignToSection();
+    else window.addEventListener('load', alignToSection, { once: true });
   }
 </script>
