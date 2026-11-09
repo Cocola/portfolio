@@ -1,0 +1,26 @@
+vercel.json
+  s_89dbbfd6e94794::t_9423fe4c2a22dd 4-19
+src/components/Descent.astro
+  s_89dbbfd6e94794::t_9423fe4c2a22dd 27,967-980,984-988,1029-1031
+  s_89dbbfd6e94794::t_c11601dd3b1fd0 981-983
+  s_89dbbfd6e94794::t_81a1fc63fa62ec 990-991,993
+  s_89dbbfd6e94794::t_928054d561f17f 1144-1158
+src/components/Logo.astro
+  s_89dbbfd6e94794::t_bddb9a533d7907 4,25-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d6b25551b13edfeeb63a1d40e5a71a7980a4203d",
+  "prompts": {},
+  "sessions": {
+    "s_89dbbfd6e94794": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1bf6d-b8aa-79f0-b506-958499fee142",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Nicolas Fiascaro <n.fiascaro@gmail.com>"
+    }
+  }
+}
