@@ -1,0 +1,19 @@
+public/favicon.svg
+  s_89dbbfd6e94794::t_a9414f62fd9a36 2-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "462c6d5e4274f667fa1fa67df9a87020bdeda19a",
+  "prompts": {},
+  "sessions": {
+    "s_89dbbfd6e94794": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1bf6d-b8aa-79f0-b506-958499fee142",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Nicolas Fiascaro <n.fiascaro@gmail.com>"
+    }
+  }
+}
